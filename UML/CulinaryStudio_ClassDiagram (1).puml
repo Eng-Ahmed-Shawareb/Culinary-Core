@@ -1,0 +1,898 @@
+@startuml CulinaryStudio_ClassDiagram
+
+' ============================================================
+'  THEME & STYLING — LIGHT MODE
+' ============================================================
+skinparam backgroundColor #FFFFFF
+skinparam classBackgroundColor #F8F9FA
+skinparam classBorderColor #D0D7DE
+skinparam classArrowColor #57606A
+skinparam classFontColor #1F2328
+skinparam classFontSize 11
+skinparam classAttributeFontSize 10
+skinparam classHeaderBackgroundColor #EFF1F3
+skinparam packageBackgroundColor #FFFFFF
+skinparam packageBorderColor #D0D7DE
+skinparam packageFontColor #0550AE
+skinparam packageFontSize 12
+skinparam packageFontStyle bold
+skinparam noteBorderColor #D0D7DE
+skinparam noteBackgroundColor #FFF8C5
+skinparam noteFontColor #57606A
+skinparam noteFontSize 10
+skinparam stereotypeCBackgroundColor #1A7F37
+skinparam stereotypeIBackgroundColor #0550AE
+skinparam stereotypeABackgroundColor #953800
+skinparam stereotypeEBackgroundColor #6639BA
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam arrowThickness 1.2
+
+title <color:#0550AE><size:16><b>Culinary Studio & Gourmet Ingredient Network — Full UML Class Diagram</b></size></color>\n<size:11><color:#57606A>Language: Java + JavaFX     |     Patterns: Singleton · DAO     |     Layers: Model · Database · Service · GUI</color></size>
+
+' ============================================================
+'  LAYER 1 — MODEL
+' ============================================================
+package "Model Layer" <<Frame>> {
+
+  class Kitchen {
+    - id   : int
+    - name : String
+    - type : String
+    + getters / setters
+  }
+
+  class Chef {
+    - id        : int
+    - firstName : String
+    - lastName  : String
+    - bio       : String
+    - expertise : String
+    + getters / setters
+  }
+
+  class Workshop {
+    - id        : int
+    - kitchenID : int
+    - chefID    : int
+    - title     : String
+    - price     : double
+    - startDate : LocalDate
+    - endDate   : LocalDate
+    - state     : String
+    + getters / setters
+  }
+
+  note right of Workshop
+    <b><color:#953800>DB Constraint</color></b>
+    startDate <= endDate
+    state: Scheduled / Active /
+    Completed / Cancelled
+  end note
+
+  class Student {
+    - id        : int
+    - firstName : String
+    - lastName  : String
+    - gender    : char
+    - phone     : String
+    + getters / setters
+  }
+
+  class Register {
+    - studentID    : int
+    - workshopID   : int
+    - registerDate : LocalDate
+    - state        : String
+    + getters / setters
+  }
+
+  note right of Register
+    <b><color:#953800>Composite PK</color></b>
+    (studentID, workshopID)
+    state: Pending / Paid /
+    Cancelled
+  end note
+
+  class Supplier {
+    - id   : int
+    - name : String
+    + getters / setters
+  }
+
+  class IngredientBatch {
+    - id             : int
+    - supplierID     : int
+    - name           : String
+    - units          : int
+    - expirationDate : LocalDate
+    - deliveryDate   : LocalDate
+    - state          : String
+    + getters / setters
+  }
+
+  note right of IngredientBatch
+    <b><color:#953800>DB Constraint</color></b>
+    expirationDate > deliveryDate
+    ON DELETE CASCADE from Supplier
+  end note
+
+  class Consume {
+    - batchID     : int
+    - workshopID  : int
+    - quantity    : int
+    - consumeDate : LocalDate
+    + getters / setters
+  }
+
+  note right of Consume
+    <b><color:#953800>Composite PK</color></b>
+    (batchID, workshopID)
+    Enables traceability from
+    workshop → batch → supplier.
+  end note
+
+  Kitchen         "1" o-- "0..*" Workshop        : hosts >
+  Chef            "1" o-- "0..*" Workshop        : leads >
+  Student         "1" *-- "0..*" Register        : enrolls >
+  Workshop        "1" *-- "0..*" Register        : has >
+  Workshop        "1" *-- "0..*" Consume         : uses >
+  IngredientBatch "1" o-- "0..*" Consume         : consumed in >
+  Supplier        "1" *-- "0..*" IngredientBatch : supplies >
+}
+
+' ============================================================
+'  LAYER 2 — DATABASE (Singleton + DAO)
+' ============================================================
+package "Database Layer  [Singleton + DAO Pattern]" <<Frame>> {
+
+  class DatabaseConnection <<Singleton>> {
+    - {static} instance : DatabaseConnection
+    - connection        : Connection
+    - {static} DB_URL   : String = "jdbc:sqlserver://localhost;database=CulinaryStudio"
+    - DatabaseConnection()
+    --
+    + {static} getInstance() : DatabaseConnection
+    + getConnection()        : Connection
+    + closeConnection()      : void
+  }
+
+  note right of DatabaseConnection
+    <b><color:#1A7F37>«Singleton Pattern»</color></b>
+    One DB connection for the
+    entire application lifetime.
+    Private constructor prevents
+    external instantiation.
+  end note
+
+  interface IRepository<T> <<interface>> {
+    + findById(id : int) : Optional<T>
+    + findAll()          : List<T>
+    + save(entity : T)   : boolean
+    + update(entity : T) : boolean
+    + delete(id : int)   : boolean
+  }
+
+  note top of IRepository
+    <b><color:#1A7F37>«DAO Pattern»</color></b>
+    Generic contract for all DAOs.
+    Services depend on this abstraction,
+    not on concrete DAO classes.
+  end note
+
+  class KitchenDAO {
+    - db : DatabaseConnection
+    --
+    + findById(id : int)     : Optional<Kitchen>
+    + findAll()              : List<Kitchen>
+    + findUnusedLastMonth()  : List<Kitchen>
+    + save(k : Kitchen)      : boolean
+    + update(k : Kitchen)    : boolean
+    + delete(id : int)       : boolean
+  }
+
+  note right of KitchenDAO
+    <b><color:#57606A>findUnusedLastMonth()</color></b>
+    LEFT JOIN Kitchen, Workshop
+    WHERE no workshop existed
+    in the last 30 days.
+    → Inquiry #2
+  end note
+
+  class ChefDAO {
+    - db : DatabaseConnection
+    --
+    + findById(id : int)          : Optional<Chef>
+    + findAll()                   : List<Chef>
+    + findInactiveLastMonth()     : List<Chef>
+    + save(c : Chef)              : boolean
+    + update(c : Chef)            : boolean
+    + delete(id : int)            : boolean
+  }
+
+  note right of ChefDAO
+    <b><color:#57606A>findInactiveLastMonth()</color></b>
+    LEFT JOIN Chef, Workshop
+    WHERE no workshop led
+    in the last 30 days.
+    → Inquiry #4
+  end note
+
+  class WorkshopDAO {
+    - db : DatabaseConnection
+    --
+    + findById(id : int)        : Optional<Workshop>
+    + findAll()                 : List<Workshop>
+    + findByKitchen(kID : int)  : List<Workshop>
+    + findByChef(cID : int)     : List<Workshop>
+    + findLastMonth()           : List<Workshop>
+    + save(w : Workshop)        : boolean
+    + update(w : Workshop)      : boolean
+    + delete(id : int)          : boolean
+  }
+
+  class StudentDAO {
+    - db : DatabaseConnection
+    --
+    + findById(id : int)          : Optional<Student>
+    + findAll()                   : List<Student>
+    + findWithWorkshopCount()     : List<Object[]>
+    + save(s : Student)           : boolean
+    + update(s : Student)         : boolean
+    + delete(id : int)            : boolean
+  }
+
+  note right of StudentDAO
+    <b><color:#57606A>findWithWorkshopCount()</color></b>
+    JOIN Student, Register
+    GROUP BY student → returns
+    phone + total workshops.
+    → Inquiry #6
+  end note
+
+  class RegisterDAO {
+    - db : DatabaseConnection
+    --
+    + findById(sID : int, wID : int)    : Optional<Register>
+    + findAll()                         : List<Register>
+    + findByWorkshop(wID : int)         : List<Register>
+    + findByStudent(sID : int)          : List<Register>
+    + findTopExpertiseByEnrollments()   : List<Object[]>
+    + save(r : Register)                : boolean
+    + update(r : Register)              : boolean
+    + delete(sID : int, wID : int)      : boolean
+  }
+
+  note right of RegisterDAO
+    <b><color:#57606A>findTopExpertiseByEnrollments()</color></b>
+    JOIN Register, Workshop, Chef
+    GROUP BY expertise ORDER BY
+    COUNT(*) DESC → top expertise.
+    → Inquiry #1
+  end note
+
+  class SupplierDAO {
+    - db : DatabaseConnection
+    --
+    + findById(id : int)            : Optional<Supplier>
+    + findAll()                     : List<Supplier>
+    + findTopByQuantityLastMonth()  : Optional<Supplier>
+    + save(s : Supplier)            : boolean
+    + update(s : Supplier)          : boolean
+    + delete(id : int)              : boolean
+  }
+
+  note right of SupplierDAO
+    <b><color:#57606A>findTopByQuantityLastMonth()</color></b>
+    JOIN Supplier, Batch, Consume
+    WHERE last 30 days, GROUP BY
+    supplier, ORDER BY SUM(qty).
+    → Inquiry #3
+  end note
+
+  class IngredientBatchDAO {
+    - db : DatabaseConnection
+    --
+    + findById(id : int)                    : Optional<IngredientBatch>
+    + findAll()                             : List<IngredientBatch>
+    + findBySupplier(sID : int)             : List<IngredientBatch>
+    + findByKitchenLastMonth(kID : int)     : List<IngredientBatch>
+    + save(b : IngredientBatch)             : boolean
+    + update(b : IngredientBatch)           : boolean
+    + delete(id : int)                      : boolean
+  }
+
+  note right of IngredientBatchDAO
+    <b><color:#57606A>findByKitchenLastMonth()</color></b>
+    JOIN Kitchen, Workshop,
+    Consume, Batch WHERE last
+    30 days, GROUP BY kitchen.
+    → Inquiry #5
+  end note
+
+  class ConsumeDAO {
+    - db : DatabaseConnection
+    --
+    + findById(bID : int, wID : int) : Optional<Consume>
+    + findAll()                      : List<Consume>
+    + findByWorkshop(wID : int)      : List<Consume>
+    + findByBatch(bID : int)         : List<Consume>
+    + save(c : Consume)              : boolean
+    + update(c : Consume)            : boolean
+    + delete(bID : int, wID : int)   : boolean
+  }
+
+  KitchenDAO         ..|> IRepository
+  ChefDAO            ..|> IRepository
+  WorkshopDAO        ..|> IRepository
+  StudentDAO         ..|> IRepository
+  RegisterDAO        ..|> IRepository
+  SupplierDAO        ..|> IRepository
+  IngredientBatchDAO ..|> IRepository
+  ConsumeDAO         ..|> IRepository
+
+  KitchenDAO         --> DatabaseConnection : uses
+  ChefDAO            --> DatabaseConnection : uses
+  WorkshopDAO        --> DatabaseConnection : uses
+  StudentDAO         --> DatabaseConnection : uses
+  RegisterDAO        --> DatabaseConnection : uses
+  SupplierDAO        --> DatabaseConnection : uses
+  IngredientBatchDAO --> DatabaseConnection : uses
+  ConsumeDAO         --> DatabaseConnection : uses
+}
+
+' ============================================================
+'  LAYER 3 — SERVICE
+' ============================================================
+package "Service Layer" <<Frame>> {
+
+  class KitchenService {
+    - kitchenDAO : IRepository<Kitchen>
+    + KitchenService(dao : IRepository<Kitchen>)
+    --
+    + getAll()                     : List<Kitchen>
+    + getById(id : int)            : Optional<Kitchen>
+    + addKitchen(k : Kitchen)      : boolean
+    + updateKitchen(k : Kitchen)   : boolean
+    + deleteKitchen(id : int)      : boolean
+    + getUnusedLastMonth()         : List<Kitchen>
+  }
+
+  class ChefService {
+    - chefDAO : IRepository<Chef>
+    + ChefService(dao : IRepository<Chef>)
+    --
+    + getAll()                     : List<Chef>
+    + getById(id : int)            : Optional<Chef>
+    + addChef(c : Chef)            : boolean
+    + updateChef(c : Chef)         : boolean
+    + deleteChef(id : int)         : boolean
+    + getInactiveLastMonth()       : List<Chef>
+  }
+
+  class WorkshopService {
+    - workshopDAO : IRepository<Workshop>
+    + WorkshopService(dao : IRepository<Workshop>)
+    --
+    + getAll()                      : List<Workshop>
+    + getById(id : int)             : Optional<Workshop>
+    + addWorkshop(w : Workshop)     : boolean
+    + updateWorkshop(w : Workshop)  : boolean
+    + deleteWorkshop(id : int)      : boolean
+    + getLastMonth()                : List<Workshop>
+    + getByKitchen(kID : int)       : List<Workshop>
+    + getByChef(cID : int)          : List<Workshop>
+  }
+
+  class StudentService {
+    - studentDAO : IRepository<Student>
+    + StudentService(dao : IRepository<Student>)
+    --
+    + getAll()                         : List<Student>
+    + getById(id : int)                : Optional<Student>
+    + addStudent(s : Student)          : boolean
+    + updateStudent(s : Student)       : boolean
+    + deleteStudent(id : int)          : boolean
+    + getStudentsWithWorkshopCount()   : List<Object[]>
+  }
+
+  class RegisterService {
+    - registerDAO : IRepository<Register>
+    + RegisterService(dao : IRepository<Register>)
+    --
+    + getByWorkshop(wID : int)                        : List<Register>
+    + getByStudent(sID : int)                         : List<Register>
+    + enroll(r : Register)                            : boolean
+    + updateState(sID : int, wID : int, s : String)   : boolean
+    + cancel(sID : int, wID : int)                    : boolean
+    + getTopExpertiseByEnrollments()                  : List<Object[]>
+  }
+
+  class SupplierService {
+    - supplierDAO : IRepository<Supplier>
+    + SupplierService(dao : IRepository<Supplier>)
+    --
+    + getAll()                       : List<Supplier>
+    + getById(id : int)              : Optional<Supplier>
+    + addSupplier(s : Supplier)      : boolean
+    + updateSupplier(s : Supplier)   : boolean
+    + deleteSupplier(id : int)       : boolean
+    + getTopLastMonth()              : Optional<Supplier>
+  }
+
+  class IngredientBatchService {
+    - batchDAO : IRepository<IngredientBatch>
+    + IngredientBatchService(dao : IRepository<IngredientBatch>)
+    --
+    + getAll()                               : List<IngredientBatch>
+    + getById(id : int)                      : Optional<IngredientBatch>
+    + addBatch(b : IngredientBatch)          : boolean
+    + updateBatch(b : IngredientBatch)       : boolean
+    + deleteBatch(id : int)                  : boolean
+    + getByKitchenLastMonth(kID : int)       : List<IngredientBatch>
+  }
+
+  class ConsumeService {
+    - consumeDAO : IRepository<Consume>
+    + ConsumeService(dao : IRepository<Consume>)
+    --
+    + getByWorkshop(wID : int)                         : List<Consume>
+    + getByBatch(bID : int)                            : List<Consume>
+    + logConsumption(c : Consume)                      : boolean
+    + updateQuantity(bID : int, wID : int, qty : int)  : boolean
+    + removeLog(bID : int, wID : int)                  : boolean
+  }
+
+  KitchenService         ..> IRepository : <<uses>>
+  ChefService            ..> IRepository : <<uses>>
+  WorkshopService        ..> IRepository : <<uses>>
+  StudentService         ..> IRepository : <<uses>>
+  RegisterService        ..> IRepository : <<uses>>
+  SupplierService        ..> IRepository : <<uses>>
+  IngredientBatchService ..> IRepository : <<uses>>
+  ConsumeService         ..> IRepository : <<uses>>
+}
+
+' ============================================================
+'  LAYER 4 — JAVAFX GUI
+' ============================================================
+package "JavaFX GUI Layer" <<Frame>> {
+
+  class App {
+    + {static} main(args : String[]) : void
+    + start(primaryStage : Stage)    : void
+  }
+
+  class SceneManager <<Singleton>> {
+    - {static} instance   : SceneManager
+    - primaryStage        : Stage
+    - SceneManager()
+    --
+    + {static} getInstance()            : SceneManager
+    + switchTo(fxmlPath : String)       : void
+    + getStage()                        : Stage
+  }
+
+  note right of SceneManager
+    <b><color:#1A7F37>«Singleton Pattern»</color></b>
+    One Stage for the whole app.
+    Swaps the root scene node
+    when nav buttons are clicked.
+  end note
+
+  abstract class BaseController {
+    # kitchenService   : KitchenService
+    # chefService      : ChefService
+    # workshopService  : WorkshopService
+    # studentService   : StudentService
+    # registerService  : RegisterService
+    # supplierService  : SupplierService
+    # batchService     : IngredientBatchService
+    # consumeService   : ConsumeService
+    --
+    + {abstract} initialize()  : void
+    + {abstract} loadData()    : void
+    + {abstract} clearForm()   : void
+    + showAlert(msg : String, isError : boolean) : void
+  }
+
+  note right of BaseController
+    <b><color:#0550AE>Base for all FXML controllers</color></b>
+    Services injected once at
+    startup and shared downward.
+    showAlert() uses JavaFX Alert.
+  end note
+
+  ' ── Main shell ──────────────────────────────────────────
+  class MainController {
+    - borderPane    : BorderPane
+    - btnDashboard  : Button
+    - btnKitchen    : Button
+    - btnChef       : Button
+    - btnWorkshop   : Button
+    - btnStudent    : Button
+    - btnRegister   : Button
+    - btnSupplier   : Button
+    - btnBatch      : Button
+    - btnConsume    : Button
+    --
+    + initialize()              : void
+    + loadData()                : void
+    + clearForm()               : void
+    + onDashboard_Click()       : void
+    + onKitchen_Click()         : void
+    + onChef_Click()            : void
+    + onWorkshop_Click()        : void
+    + onStudent_Click()         : void
+    + onRegister_Click()        : void
+    + onSupplier_Click()        : void
+    + onBatch_Click()           : void
+    + onConsume_Click()         : void
+    + loadCenter(fxml : String) : void
+  }
+
+  note right of MainController
+    <b><color:#0550AE>Shell window (BorderPane)</color></b>
+    Left = navigation VBox with
+    styled Button per section.
+    Center = swapped FXML pane.
+    loadCenter() loads child FXML
+    into BorderPane center at runtime.
+  end note
+
+  ' ── Dashboard ───────────────────────────────────────────
+  class DashboardController {
+    - registerService  : RegisterService
+    - kitchenService   : KitchenService
+    - supplierService  : SupplierService
+    - chefService      : ChefService
+    - batchService     : IngredientBatchService
+    - studentService   : StudentService
+    - cmbInquiry       : ComboBox<String>
+    - btnRun           : Button
+    - tableView        : TableView<ObservableList<String>>
+    - lblTitle         : Label
+    - lblSubtitle      : Label
+    - barChart         : BarChart<String, Number>
+    - pieChart         : PieChart
+    - chartPane        : StackPane
+    --
+    + initialize()                     : void
+    + loadData()                       : void
+    + clearForm()                      : void
+    + onRun_Click()                    : void
+    + runInquiry1_TopExpertise()       : void
+    + runInquiry2_UnusedKitchens()     : void
+    + runInquiry3_TopSupplier()        : void
+    + runInquiry4_InactiveChefs()      : void
+    + runInquiry5_BatchesByKitchen()   : void
+    + runInquiry6_StudentWorkshops()   : void
+    - buildTableColumns(headers : List<String>)  : void
+    - buildBarChart(data : List<Object[]>)        : void
+    - buildPieChart(data : List<Object[]>)        : void
+    - showChart(type : String)                    : void
+  }
+
+  note right of DashboardController
+    <b><color:#0550AE>Dashboard — 6 Inquiry Reports</color></b>
+
+    #1 Top expertise by enrollments
+       JOIN: Register + Workshop + Chef
+       GROUP BY expertise
+       → BarChart (expertise vs count)
+
+    #2 Kitchens unused last month
+       LEFT JOIN: Kitchen + Workshop
+       WHERE workshop IS NULL
+       → TableView (kitchen name, type)
+
+    #3 Top supplier by qty last month
+       JOIN: Supplier + Batch + Consume
+       SUM(quantity) GROUP BY supplier
+       → PieChart (suppliers vs qty)
+
+    #4 Inactive chefs last month
+       LEFT JOIN: Chef + Workshop
+       WHERE workshop IS NULL
+       → TableView (chef name, expertise)
+
+    #5 Batches per kitchen last month
+       JOIN: Kitchen + Workshop
+            + Consume + Batch
+       → TableView (kitchen, batch, qty)
+
+    #6 Student contact + workshop count
+       JOIN: Student + Register
+       GROUP BY student
+       → TableView (name, phone, count)
+
+    cmbInquiry selects which report.
+    btnRun fires the matching method.
+    Results shown in TableView.
+    Charts shown for #1 and #3.
+  end note
+
+  ' ── CRUD Controllers ────────────────────────────────────
+  class KitchenController {
+    - tableView   : TableView<Kitchen>
+    - txtID       : TextField
+    - txtName     : TextField
+    - txtType     : TextField
+    - btnAdd      : Button
+    - btnUpdate   : Button
+    - btnDelete   : Button
+    - btnClear    : Button
+    --
+    + initialize()      : void
+    + loadData()        : void
+    + clearForm()       : void
+    + onAdd_Click()     : void
+    + onUpdate_Click()  : void
+    + onDelete_Click()  : void
+    + onRowSelect()     : void
+  }
+
+  note right of KitchenController
+    <b><color:#0550AE>CRUD</color></b>
+    INSERT: add new kitchen.
+    UPDATE: edit name / type.
+    DELETE: remove by ID.
+    SELECT: TableView shows all.
+  end note
+
+  class ChefController {
+    - tableView    : TableView<Chef>
+    - txtID        : TextField
+    - txtFirstName : TextField
+    - txtLastName  : TextField
+    - txtBio       : TextField
+    - txtExpertise : TextField
+    - btnAdd       : Button
+    - btnUpdate    : Button
+    - btnDelete    : Button
+    - btnClear     : Button
+    --
+    + initialize()      : void
+    + loadData()        : void
+    + clearForm()       : void
+    + onAdd_Click()     : void
+    + onUpdate_Click()  : void
+    + onDelete_Click()  : void
+    + onRowSelect()     : void
+  }
+
+  note right of ChefController
+    <b><color:#0550AE>CRUD</color></b>
+    INSERT: register new chef.
+    UPDATE: update expertise / bio.
+    DELETE: remove chef by ID.
+    SELECT: TableView shows all.
+  end note
+
+  class WorkshopController {
+    - tableView   : TableView<Workshop>
+    - txtID       : TextField
+    - txtTitle    : TextField
+    - txtPrice    : TextField
+    - cmbKitchen  : ComboBox<Kitchen>
+    - cmbChef     : ComboBox<Chef>
+    - dtpStart    : DatePicker
+    - dtpEnd      : DatePicker
+    - cmbState    : ComboBox<String>
+    - btnAdd      : Button
+    - btnUpdate   : Button
+    - btnDelete   : Button
+    - btnClear    : Button
+    --
+    + initialize()      : void
+    + loadData()        : void
+    + clearForm()       : void
+    + onAdd_Click()     : void
+    + onUpdate_Click()  : void
+    + onDelete_Click()  : void
+    + onRowSelect()     : void
+  }
+
+  note right of WorkshopController
+    <b><color:#0550AE>CRUD</color></b>
+    INSERT: schedule new workshop.
+    UPDATE: change state / price.
+    DELETE: remove cancelled workshop.
+    SELECT JOIN: TableView shows
+    Kitchen name + Chef name.
+    ComboBoxes populated via services.
+  end note
+
+  class StudentController {
+    - tableView    : TableView<Student>
+    - txtID        : TextField
+    - txtFirstName : TextField
+    - txtLastName  : TextField
+    - cmbGender    : ComboBox<String>
+    - txtPhone     : TextField
+    - btnAdd       : Button
+    - btnUpdate    : Button
+    - btnDelete    : Button
+    - btnClear     : Button
+    --
+    + initialize()      : void
+    + loadData()        : void
+    + clearForm()       : void
+    + onAdd_Click()     : void
+    + onUpdate_Click()  : void
+    + onDelete_Click()  : void
+    + onRowSelect()     : void
+  }
+
+  note right of StudentController
+    <b><color:#0550AE>CRUD</color></b>
+    INSERT: register new student.
+    UPDATE: update phone / name.
+    DELETE: remove student record.
+    SELECT: TableView shows all.
+  end note
+
+  class RegisterController {
+    - tableView    : TableView<Register>
+    - cmbStudent   : ComboBox<Student>
+    - cmbWorkshop  : ComboBox<Workshop>
+    - dtpRegDate   : DatePicker
+    - cmbState     : ComboBox<String>
+    - btnEnroll    : Button
+    - btnUpdate    : Button
+    - btnCancel    : Button
+    - btnClear     : Button
+    --
+    + initialize()       : void
+    + loadData()         : void
+    + clearForm()        : void
+    + onEnroll_Click()   : void
+    + onUpdate_Click()   : void
+    + onCancel_Click()   : void
+    + onRowSelect()      : void
+  }
+
+  note right of RegisterController
+    <b><color:#0550AE>CRUD</color></b>
+    INSERT: enroll student in workshop.
+    UPDATE: change payment state.
+    DELETE: cancel enrollment.
+    SELECT JOIN: TableView shows
+    student name + workshop title.
+  end note
+
+  class SupplierController {
+    - tableView : TableView<Supplier>
+    - txtID     : TextField
+    - txtName   : TextField
+    - btnAdd    : Button
+    - btnUpdate : Button
+    - btnDelete : Button
+    - btnClear  : Button
+    --
+    + initialize()      : void
+    + loadData()        : void
+    + clearForm()       : void
+    + onAdd_Click()     : void
+    + onUpdate_Click()  : void
+    + onDelete_Click()  : void
+    + onRowSelect()     : void
+  }
+
+  class IngredientBatchController {
+    - tableView   : TableView<IngredientBatch>
+    - txtID       : TextField
+    - txtName     : TextField
+    - txtUnits    : TextField
+    - cmbSupplier : ComboBox<Supplier>
+    - dtpDelivery : DatePicker
+    - dtpExpiry   : DatePicker
+    - cmbState    : ComboBox<String>
+    - btnAdd      : Button
+    - btnUpdate   : Button
+    - btnDelete   : Button
+    - btnClear    : Button
+    --
+    + initialize()      : void
+    + loadData()        : void
+    + clearForm()       : void
+    + onAdd_Click()     : void
+    + onUpdate_Click()  : void
+    + onDelete_Click()  : void
+    + onRowSelect()     : void
+  }
+
+  note right of IngredientBatchController
+    <b><color:#0550AE>CRUD</color></b>
+    INSERT: register new batch.
+    UPDATE: update units / state.
+    DELETE: remove expired batch.
+    SELECT JOIN: TableView shows
+    supplier name alongside batch.
+    ComboBox populated via
+    SupplierService.
+  end note
+
+  class ConsumeController {
+    - tableView      : TableView<Consume>
+    - cmbBatch       : ComboBox<IngredientBatch>
+    - cmbWorkshop    : ComboBox<Workshop>
+    - txtQuantity    : TextField
+    - dtpConsumeDate : DatePicker
+    - btnLog         : Button
+    - btnUpdate      : Button
+    - btnRemove      : Button
+    - btnClear       : Button
+    --
+    + initialize()      : void
+    + loadData()        : void
+    + clearForm()       : void
+    + onLog_Click()     : void
+    + onUpdate_Click()  : void
+    + onRemove_Click()  : void
+    + onRowSelect()     : void
+  }
+
+  note right of ConsumeController
+    <b><color:#0550AE>CRUD</color></b>
+    INSERT: log batch usage in workshop.
+    UPDATE: correct quantity consumed.
+    DELETE: remove incorrect log.
+    SELECT JOIN: TableView shows batch
+    name + workshop title + kitchen.
+  end note
+
+  ' ── Inheritance ──
+  DashboardController          --|> BaseController
+  KitchenController            --|> BaseController
+  ChefController               --|> BaseController
+  WorkshopController           --|> BaseController
+  StudentController            --|> BaseController
+  RegisterController           --|> BaseController
+  SupplierController           --|> BaseController
+  IngredientBatchController    --|> BaseController
+  ConsumeController            --|> BaseController
+  MainController               --|> BaseController
+
+  ' ── App wiring ──
+  App           --> SceneManager    : launches >
+  SceneManager  --> MainController  : loads shell >
+  MainController --> DashboardController       : loads center >
+  MainController --> KitchenController         : loads center >
+  MainController --> ChefController            : loads center >
+  MainController --> WorkshopController        : loads center >
+  MainController --> StudentController         : loads center >
+  MainController --> RegisterController        : loads center >
+  MainController --> SupplierController        : loads center >
+  MainController --> IngredientBatchController : loads center >
+  MainController --> ConsumeController         : loads center >
+
+  ' ── Dashboard → Services (all 6 inquiries) ──
+  DashboardController --> RegisterService        : inquiry #1
+  DashboardController --> KitchenService         : inquiry #2
+  DashboardController --> SupplierService        : inquiry #3
+  DashboardController --> ChefService            : inquiry #4
+  DashboardController --> IngredientBatchService : inquiry #5
+  DashboardController --> StudentService         : inquiry #6
+
+  ' ── CRUD Controllers → Services ──
+  KitchenController            --> KitchenService
+  ChefController               --> ChefService
+  WorkshopController           --> WorkshopService
+  WorkshopController           --> KitchenService
+  WorkshopController           --> ChefService
+  StudentController            --> StudentService
+  RegisterController           --> RegisterService
+  RegisterController           --> StudentService
+  RegisterController           --> WorkshopService
+  SupplierController           --> SupplierService
+  IngredientBatchController    --> IngredientBatchService
+  IngredientBatchController    --> SupplierService
+  ConsumeController            --> ConsumeService
+  ConsumeController            --> IngredientBatchService
+  ConsumeController            --> WorkshopService
+}
+
+@enduml
