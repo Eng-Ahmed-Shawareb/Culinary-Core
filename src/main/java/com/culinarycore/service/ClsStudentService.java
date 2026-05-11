@@ -1,4 +1,4 @@
-package com.culinarycore.SERVICE;
+package com.culinarycore.service;
 
 public class ClsStudentService {
 }
