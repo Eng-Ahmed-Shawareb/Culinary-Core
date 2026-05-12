@@ -24,6 +24,11 @@
                 <Button fx:id="btnSupplier" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onSupplier_Click" text="Suppliers" />
                 <Button fx:id="btnBatch" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onBatch_Click" text="Ingredient Batches" />
                 <Button fx:id="btnConsume" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onConsume_Click" text="Batch Consumption" />
+                <Button fx:id="btnTheme" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onThemeToggle_Click" text="Toggle Dark Mode" styleClass="button-secondary">
+                    <VBox.margin>
+                        <Insets top="30.0" />
+                    </VBox.margin>
+                </Button>
             </children>
         </VBox>
     </left>

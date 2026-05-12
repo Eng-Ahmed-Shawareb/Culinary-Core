@@ -19,6 +19,8 @@ public class MainController extends BaseController {
     @FXML private Button btnSupplier;
     @FXML private Button btnBatch;
     @FXML private Button btnConsume;
+    @FXML private Button btnTheme;
+    private boolean isDarkMode = false;
 
     @Override
     public void initialize() {
@@ -58,6 +60,18 @@ public class MainController extends BaseController {
 
     @FXML
     public void onConsume_Click() { loadCenter("/com/culinarycore/gui/Consume.fxml"); }
+
+    @FXML
+    public void onThemeToggle_Click() {
+        isDarkMode = !isDarkMode;
+        btnTheme.setText(isDarkMode ? "Toggle Light Mode" : "Toggle Dark Mode");
+        String darkCss = getClass().getResource("/com/culinarycore/gui/dark-style.css").toExternalForm();
+        if (isDarkMode) {
+            borderPane.getScene().getStylesheets().add(darkCss);
+        } else {
+            borderPane.getScene().getStylesheets().remove(darkCss);
+        }
+    }
 
     public void loadCenter(String fxml) {
         try {
