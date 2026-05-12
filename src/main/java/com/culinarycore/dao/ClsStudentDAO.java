@@ -3,6 +3,7 @@ package com.culinarycore.dao;
 import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.dao.singleton.ClsDatabaseConnection;
 import com.culinarycore.model.ClsStudent;
+import com.culinarycore.model.dto.ClsStudentWorkshopCountDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,6 +101,7 @@ return statement.executeUpdate()>0;
         }
         return false;
     }
+
     @Override
     public boolean delete(int ID) {
         String query="DELETE FROM student WHERE ID=?";
@@ -112,5 +114,37 @@ return statement.executeUpdate()>0;
             System.err.println("Exception: "+es.getMessage());
         }
         return false;
+    }
+
+    public List<ClsStudentWorkshopCountDTO> getStudentWorkshopCounts() {
+        List<ClsStudentWorkshopCountDTO> resultList = new ArrayList<>();
+        Connection connection = _databaseConnection.getConnection();
+
+        String query = "SELECT " +
+                "    s.[first name], " +
+                "    s.[last name], " +
+                "    s.phone, " +
+                "    COUNT(r.FK_WorkshopID) AS [Workshop Count] " +
+                "FROM Register r " +
+                "INNER JOIN student s ON s.ID = r.FK_StudentID " +
+                "GROUP BY " +
+                "    s.[first name], " +
+                "    s.[last name], " +
+                "    s.phone;";
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                ClsStudentWorkshopCountDTO dto = new ClsStudentWorkshopCountDTO(resultSet.getString("first name") ,
+                        resultSet.getString("last name") ,
+                        resultSet.getString("phone") ,
+                        resultSet.getInt("Workshop Count"));
+                resultList.add(dto);
+            }
+        } catch (SQLException es) {
+            System.out.println("Exception: " + es.getMessage());
+        }
+        return resultList;
     }
 }
