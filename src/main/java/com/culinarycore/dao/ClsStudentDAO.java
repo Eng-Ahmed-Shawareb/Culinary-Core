@@ -31,8 +31,8 @@ public ClsStudentDAO(){
             if(resultSet.next()){
                 ClsStudent student=new ClsStudent(resultSet.getString("phone"),
                         resultSet.getString("gender").charAt(0),
-                        resultSet.getString("[last name]"),
-                        resultSet.getString("[first name]"));
+                        resultSet.getString("last name"),
+                        resultSet.getString("first name"));
                 student.setID(resultSet.getInt("ID"));
                 return Optional.of(student);
             }
@@ -54,8 +54,8 @@ public ClsStudentDAO(){
             while(resultSet.next()){
                 ClsStudent student=new ClsStudent(resultSet.getString("phone"),
                         resultSet.getString("gender").charAt(0),
-                        resultSet.getString("[last name]"),
-                        resultSet.getString("[first name]"));
+                        resultSet.getString("last name"),
+                        resultSet.getString("first name"));
                 student.setID(resultSet.getInt("ID"));
                students.add(student);
             }

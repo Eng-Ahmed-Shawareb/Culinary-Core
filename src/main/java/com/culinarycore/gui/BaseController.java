@@ -7,7 +7,7 @@ public abstract class BaseController {
     protected KitchenService kitchenService;
     protected ChefService chefService;
     protected ClsWorkshopService workshopService;
-    protected StudentService studentService;
+    protected ClsStudentService studentService;
     protected ClsRegisterService registerService;
     protected SupplierService supplierService;
     protected IngredientBatchService batchService;
@@ -19,7 +19,7 @@ public abstract class BaseController {
         this.kitchenService = new KitchenService();
         this.chefService = new ChefService();
         this.workshopService = new ClsWorkshopService();
-        this.studentService = new StudentService();
+        this.studentService = new ClsStudentService();
         this.registerService = new ClsRegisterService();
         this.supplierService = new SupplierService();
         this.batchService = new IngredientBatchService();

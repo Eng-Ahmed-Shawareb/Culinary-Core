@@ -26,8 +26,8 @@ public class ClsChefDAO implements IRepository<ClsChef> {
             ResultSet resultSet= statement.executeQuery();
             if(resultSet.next()) {
                 ClsChef chef = new ClsChef(resultSet.getString("bio"),
-                     resultSet.getString("[first name]"),
-                        resultSet.getString("[last name]"),
+                     resultSet.getString("first name"),
+                        resultSet.getString("last name"),
                         resultSet.getString("expertise"));
                 chef.setID(resultSet.getInt("ID"));
                 return Optional.of(chef);
@@ -49,8 +49,8 @@ public class ClsChefDAO implements IRepository<ClsChef> {
             ResultSet resultSet= statement.executeQuery();
             while(resultSet.next()) {
                 ClsChef chef = new ClsChef(resultSet.getString("bio"),
-                        resultSet.getString("[first name]"),
-                        resultSet.getString("[last name]"),
+                        resultSet.getString("first name"),
+                        resultSet.getString("last name"),
                         resultSet.getString("expertise"));
                 chef.setID(resultSet.getInt("ID"));
                chefs.add(chef);

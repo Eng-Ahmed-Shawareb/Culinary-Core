@@ -2,6 +2,7 @@ module com.culinarycore {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires java.naming;
 
 
     opens com.culinarycore to javafx.fxml;
