@@ -3,7 +3,7 @@ import java.util.Collections;
 import java.util.List;
 import com.culinarycore.model.ClsConsume;
 
-public class ConsumeService {
+public class ClsConsumeService {
     public List<ClsConsume> getAll() { return Collections.emptyList(); }
     public boolean logConsumption(ClsConsume c) { return true; }
     public boolean updateQuantity(int bID, int wID, int qty) { return true; }

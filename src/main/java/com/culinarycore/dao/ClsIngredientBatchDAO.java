@@ -130,4 +130,61 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
         }
         return false;
     }
+
+    public List<ClsIngredientBatch> findBySupplier(int sID) {
+        String query = "SELECT * FROM Ingredient_batch WHERE FK_SupplierID = ?";
+        List<ClsIngredientBatch> batches = new ArrayList<>();
+        Connection connection = _databaseConnection.getConnection();
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, sID);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                batches.add(new ClsIngredientBatch(
+                        resultSet.getInt("ID"),
+                        resultSet.getInt("FK_SupplierID"),
+                        resultSet.getInt("units"),
+                        resultSet.getString("name"),
+                        resultSet.getDate("expiration date").toLocalDate(),
+                        resultSet.getDate("delivery date").toLocalDate(),
+                        EnIngredientBatch.valueOf(resultSet.getString("state").toUpperCase())
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Exception findBySupplier: " + e.getMessage());
+        }
+        return batches;
+    }
+
+    public List<ClsIngredientBatch> findByKitchenLastMonth(int kID) {
+
+        String query = "SELECT B.* FROM Ingredient_batch B " +
+                "JOIN Consume C ON B.ID = C.FK_BatchID " +
+                "WHERE C.FK_WorkshopID = ? " +
+                "AND C.[consuming date] >= DATEADD(month, -1, GETDATE())";
+
+        List<ClsIngredientBatch> batches = new ArrayList<>();
+        Connection connection = _databaseConnection.getConnection();
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, kID);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                batches.add(new ClsIngredientBatch(
+                        resultSet.getInt("ID"),
+                        resultSet.getInt("FK_SupplierID"),
+                        resultSet.getInt("units"),
+                        resultSet.getString("name"),
+                        resultSet.getDate("expiration date").toLocalDate(),
+                        resultSet.getDate("delivery date").toLocalDate(),
+                        EnIngredientBatch.valueOf(resultSet.getString("state").toUpperCase())
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Exception findByKitchen: " + e.getMessage());
+        }
+        return batches;
+    }
 }

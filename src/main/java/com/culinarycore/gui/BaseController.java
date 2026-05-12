@@ -9,9 +9,9 @@ public abstract class BaseController {
     protected WorkshopService workshopService;
     protected StudentService studentService;
     protected RegisterService registerService;
-    protected SupplierService supplierService;
-    protected IngredientBatchService batchService;
-    protected ConsumeService consumeService;
+    protected ClsSupplierService supplierService;
+    protected ClsIngredientBatchService batchService;
+    protected ClsConsumeService consumeService;
 
     public BaseController() {
         // Services injected at startup or instantiated here
@@ -21,9 +21,9 @@ public abstract class BaseController {
         this.workshopService = new WorkshopService();
         this.studentService = new StudentService();
         this.registerService = new RegisterService();
-        this.supplierService = new SupplierService();
-        this.batchService = new IngredientBatchService();
-        this.consumeService = new ConsumeService();
+        this.supplierService = new ClsSupplierService();
+        this.batchService = new ClsIngredientBatchService();
+        this.consumeService = new ClsConsumeService();
     }
 
     public abstract void initialize();

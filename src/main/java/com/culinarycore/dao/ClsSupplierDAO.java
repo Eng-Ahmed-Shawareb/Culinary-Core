@@ -96,4 +96,27 @@ public class ClsSupplierDAO implements IRepository<ClsSupplier> {
         }
         return false;
     }
+    public Optional<ClsSupplier> findTopByQuantityLastMonth() {
+        String query = "SELECT TOP 1 S.ID, S.name " +
+                "FROM Supplier S " +
+                "JOIN Ingredient_batch B ON S.ID = B.FK_SupplierID " +
+                "WHERE B.[delivery date] >= DATEADD(month, -1, GETDATE()) " +
+                "GROUP BY S.ID, S.name " +
+                "ORDER BY SUM(B.units) DESC";
+
+        Connection connection = _databaseConnection.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return Optional.of(new ClsSupplier(
+                        resultSet.getInt("ID"),
+                        resultSet.getString("name")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Exception findTop: " + e.getMessage());
+        }
+        return Optional.empty();
+    }
 }
