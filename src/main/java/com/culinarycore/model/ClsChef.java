@@ -7,11 +7,11 @@ public class ClsChef {
     private String _bio;
     private String _expertise;
 
-    public int getId() {
+    public int getID() {
         return _ID;
     }
 
-    public void setId(int _ID) {
+    public void setID(int _ID) {
         this._ID = _ID;
     }
 

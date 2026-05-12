@@ -8,11 +8,11 @@ public class ClsStudent {
    private char _gender;
    private String _phone;
 
-    public int getId() {
+    public int getID() {
         return _ID;
     }
 
-    public void setId(int _ID) {
+    public void setID(int _ID) {
         this._ID = _ID;
     }
 

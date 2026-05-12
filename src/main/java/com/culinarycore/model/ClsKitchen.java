@@ -2,7 +2,7 @@ package com.culinarycore.model;
 
 public class ClsKitchen {
     private int _ID;
-    private String name;
+    private String _name;
     private String _type;
 
     public String get_type() {
@@ -22,15 +22,15 @@ public class ClsKitchen {
     }
 
     public String getName() {
-        return name;
+        return _name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String _name) {
+        this._name = _name;
     }
 
-    public ClsKitchen(String name, String _type) {
-        this.name = name;
+    public ClsKitchen(String _name, String _type) {
+        this._name = _name;
         this._type = _type;
     }
 }
