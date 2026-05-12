@@ -1,0 +1,164 @@
+/* GitHub Light Theme Inspired Palette */
+* {
+    -fx-font-family: "Inter", "Roboto", "Segoe UI", sans-serif;
+    -fx-text-fill: #1F2328;
+}
+
+.root {
+    -fx-background-color: #F8F9FA;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    -fx-background-color: #EFF1F3;
+    -fx-border-color: transparent #D0D7DE transparent transparent;
+    -fx-border-width: 1px;
+    -fx-padding: 20 10 20 10;
+}
+
+.sidebar .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #57606A;
+    -fx-alignment: center-left;
+    -fx-padding: 10 20;
+    -fx-background-radius: 6;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.sidebar .button:hover {
+    -fx-background-color: #D0D7DE;
+    -fx-text-fill: #1F2328;
+}
+
+.sidebar .button:pressed {
+    -fx-background-color: #C0C7CE;
+}
+
+/* Main Content Area */
+.main-content {
+    -fx-padding: 30;
+    -fx-background-color: #FFFFFF;
+}
+
+/* Headers */
+.header-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0550AE;
+    -fx-padding: 0 0 20 0;
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #57606A;
+}
+
+/* Primary Button */
+.button-primary {
+    -fx-background-color: #1A7F37;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.button-primary:hover {
+    -fx-background-color: #115F27;
+}
+
+/* Secondary Button */
+.button-secondary {
+    -fx-background-color: #0550AE;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.button-secondary:hover {
+    -fx-background-color: #033D8B;
+}
+
+/* Danger Button */
+.button-danger {
+    -fx-background-color: #953800;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.button-danger:hover {
+    -fx-background-color: #7A2E00;
+}
+
+/* Text Fields & Combo Boxes */
+.text-field, .combo-box, .date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D0D7DE;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 6 10;
+    -fx-font-size: 13px;
+}
+.text-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #0550AE;
+    -fx-border-width: 2px;
+    -fx-padding: 5 9; /* To compensate for border width */
+}
+
+/* Table View */
+.table-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D0D7DE;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+.table-view .column-header-background {
+    -fx-background-color: #EFF1F3;
+    -fx-background-radius: 6 6 0 0;
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #D0D7DE transparent transparent;
+    -fx-font-weight: bold;
+    -fx-text-fill: #57606A;
+}
+.table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #EFF1F3 transparent;
+}
+.table-row-cell:odd {
+    -fx-background-color: #F8F9FA;
+}
+.table-row-cell:selected {
+    -fx-background-color: #E6F0FF;
+    -fx-text-fill: #0550AE;
+}
+
+/* Form Layout */
+.form-grid {
+    -fx-hgap: 15;
+    -fx-vgap: 15;
+    -fx-padding: 20;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D0D7DE;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+.form-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2328;
+}
+
+/* Charts */
+.chart-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0550AE;
+}
+.chart-pie-label {
+    -fx-fill: #1F2328;
+}

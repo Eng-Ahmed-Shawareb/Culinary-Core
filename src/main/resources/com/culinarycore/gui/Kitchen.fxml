@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="768.0" prefWidth="774.0" spacing="20.0" styleClass="main-content" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.culinarycore.gui.KitchenController">
+    <children>
+        <Label styleClass="header-label" text="Kitchen Management" />
+        <Label styleClass="subtitle-label" text="Manage kitchen details and types." />
+        
+        <GridPane hgap="15.0" styleClass="form-grid" vgap="15.0">
+            <children>
+                <Label styleClass="form-label" text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="txtID" disable="true" editable="false" promptText="Auto-generated" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                
+                <Label styleClass="form-label" text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextField fx:id="txtName" promptText="Kitchen Name" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                
+                <Label styleClass="form-label" text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField fx:id="txtType" promptText="e.g. Baking, General" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            </children>
+        </GridPane>
+        
+        <HBox spacing="10.0">
+            <children>
+                <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#onAdd_Click" styleClass="button-primary" text="Add Kitchen" />
+                <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#onUpdate_Click" styleClass="button-secondary" text="Update" />
+                <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#onDelete_Click" styleClass="button-danger" text="Delete" />
+                <Button fx:id="btnClear" mnemonicParsing="false" onAction="#clearForm" styleClass="button-secondary" text="Clear Form" />
+            </children>
+        </HBox>
+        
+        <TableView fx:id="tableView" onMouseClicked="#onRowSelect" prefHeight="300.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+    </children>
+</VBox>

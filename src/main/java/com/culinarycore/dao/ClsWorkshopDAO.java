@@ -71,7 +71,26 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
         return resultList;
     }
 
+    @Override
+    public boolean save(ClsWorkshop entity) {
+        Connection connection = _databaseConnection.getConnection();
+        String query = "INSERT INTO Workshop(FK_KitchenID , FK_ChefID , [start date] , [end date] , price , state , technique , title) VALUES(? , ? , ? , ? , ? , ? , ? , ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1 , entity.getKitchenID());
+            statement.setInt(2 , entity.getChefID());
+            statement.setObject(3 , entity.getStartDate());
+            statement.setObject(4 , entity.getEndDate());
+            statement.setDouble(5 , entity.getPrice());
+            statement.setString(6 , entity.getStatus().name());
+            statement.setString(7 , entity.getTechnique());
+            statement.setString(8 , entity.getTitle());
 
+            return statement.executeUpdate() > 0;
+        } catch (SQLException es) {
+            System.out.println("Exception : " + es.getMessage());
+        }
+        return false;
+    }
 
     @Override
     public boolean update(ClsWorkshop entity) {

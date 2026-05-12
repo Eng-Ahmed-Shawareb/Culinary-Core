@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="borderPane" prefHeight="768.0" prefWidth="1024.0" styleClass="root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.culinarycore.gui.MainController">
+    <left>
+        <VBox prefWidth="250.0" spacing="10.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+            <children>
+                <Label styleClass="header-label" text="CulinaryCore">
+                    <VBox.margin>
+                        <Insets bottom="20.0" />
+                    </VBox.margin>
+                </Label>
+                <Button fx:id="btnDashboard" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDashboard_Click" text="Dashboard" />
+                <Button fx:id="btnKitchen" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onKitchen_Click" text="Kitchens" />
+                <Button fx:id="btnChef" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onChef_Click" text="Chefs" />
+                <Button fx:id="btnWorkshop" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onWorkshop_Click" text="Workshops" />
+                <Button fx:id="btnStudent" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onStudent_Click" text="Students" />
+                <Button fx:id="btnRegister" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onRegister_Click" text="Registrations" />
+                <Button fx:id="btnSupplier" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onSupplier_Click" text="Suppliers" />
+                <Button fx:id="btnBatch" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onBatch_Click" text="Ingredient Batches" />
+                <Button fx:id="btnConsume" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onConsume_Click" text="Batch Consumption" />
+            </children>
+        </VBox>
+    </left>
+</BorderPane>

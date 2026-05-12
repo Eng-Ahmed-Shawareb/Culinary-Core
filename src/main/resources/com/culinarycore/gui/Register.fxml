@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="768.0" prefWidth="774.0" spacing="20.0" styleClass="main-content" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.culinarycore.gui.RegisterController">
+    <children>
+        <Label styleClass="header-label" text="Registration Management" />
+        <Label styleClass="subtitle-label" text="Enroll students in workshops." />
+        
+        <GridPane hgap="15.0" styleClass="form-grid" vgap="15.0">
+            <children>
+                <Label styleClass="form-label" text="Student:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <ComboBox fx:id="cmbStudent" prefWidth="250.0" promptText="Select Student" styleClass="combo-box" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                
+                <Label styleClass="form-label" text="Workshop:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                <ComboBox fx:id="cmbWorkshop" prefWidth="250.0" promptText="Select Workshop" styleClass="combo-box" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                
+                <Label styleClass="form-label" text="Registration Date:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <DatePicker fx:id="dtpRegDate" promptText="Date" styleClass="date-picker" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                
+                <Label styleClass="form-label" text="State:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                <ComboBox fx:id="cmbState" prefWidth="250.0" promptText="Payment State" styleClass="combo-box" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            </children>
+        </GridPane>
+        
+        <HBox spacing="10.0">
+            <children>
+                <Button fx:id="btnEnroll" mnemonicParsing="false" onAction="#onEnroll_Click" styleClass="button-primary" text="Enroll" />
+                <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#onUpdate_Click" styleClass="button-secondary" text="Update" />
+                <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onCancel_Click" styleClass="button-danger" text="Cancel Enrollment" />
+                <Button fx:id="btnClear" mnemonicParsing="false" onAction="#clearForm" styleClass="button-secondary" text="Clear Form" />
+            </children>
+        </HBox>
+        
+        <TableView fx:id="tableView" onMouseClicked="#onRowSelect" prefHeight="300.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+    </children>
+</VBox>
