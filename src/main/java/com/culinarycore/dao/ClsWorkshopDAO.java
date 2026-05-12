@@ -35,7 +35,8 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
                             resultSet.getObject("start date" , LocalDate.class) ,
                             resultSet.getObject("end date" , LocalDate.class) ,
                             resultSet.getDouble("price") ,
-                            EnWorkshopStatus.valueOf(resultSet.getString("state"))));
+                            EnWorkshopStatus.valueOf(resultSet.getString("state")) ,
+                            resultSet.getString("technique")));
                 }
             }
         } catch (SQLException es) {
@@ -58,7 +59,8 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
                             resultSet.getObject("start date" , LocalDate.class) ,
                             resultSet.getObject("end date" , LocalDate.class) ,
                             resultSet.getDouble("price") ,
-                            EnWorkshopStatus.valueOf(resultSet.getString("state"))));
+                            EnWorkshopStatus.valueOf(resultSet.getString("state")) ,
+                            resultSet.getString("technique")));
                     resultList.add(workshop);
                 }
             }
@@ -69,34 +71,20 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
         return resultList;
     }
 
-    @Override
-    public boolean save(ClsWorkshop entity) {
-        Connection connection = _databaseConnection.getConnection();
-        String query = "INSERT INTO Workshop(ID , FK_KitchenID , FK_ChefID , [start date] , [end date] , price , state) VALUES(? , ? , ? , ? , ? , ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1 , entity.getID());
-            statement.setInt(2 , entity.getKitchenID());
-            statement.setInt(3 , entity.getChefID());
-            statement.setObject(4 , entity.getStartDate());
-            statement.setObject(5 , entity.getEndDate());
-            statement.setDouble(6 , entity.getPrice());
-            statement.setString(7 , entity.getStatus().name());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException es) {
-            System.out.println("Exception : " + es.getMessage());
-        }
-        return false;
-    }
+
 
     @Override
     public boolean update(ClsWorkshop entity) {
         Connection connection = _databaseConnection.getConnection();
-        String query = "UPDATE Workshop set [start date] = ? , [end date] = ? , price = ? , state = ? WHERE ID = ?";
+        String query = "UPDATE Workshop set [start date] = ? , [end date] = ? , price = ? , state = ? , technique = ? , title = ? WHERE ID = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setObject(1 , entity.getStartDate());
             statement.setObject(2 , entity.getEndDate());
             statement.setDouble(3 , entity.getPrice());
             statement.setString(4 , entity.getStatus().name());
+            statement.setString(5 , entity.getTechnique());
+            statement.setString(6 , entity.getTitle());
+            statement.setInt(7 , entity.getID());
             return statement.executeUpdate() > 0;
         } catch (SQLException es) {
             System.out.println("Exception : " + es.getMessage());

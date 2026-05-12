@@ -1,6 +1,6 @@
 
 create table Ingredient_batch(
-    ID int primary key , 
+    ID int identity(1 , 1) primary key , 
     FK_SupplierID int not null , 
     name nvarchar(50) , 
     units int not null , 

@@ -7,6 +7,7 @@ public class ClsWorkshop {
     private int _kitchenID;
     private int _chefID;
     private String _title;
+    private String _technique;
     private double _price;
     private LocalDate _startDate;
     private LocalDate _endDate;
@@ -16,7 +17,7 @@ public class ClsWorkshop {
                        int _chefID, String _title,
                        LocalDate _startDate,
                        LocalDate _endDate, double _price,
-                       EnWorkshopStatus _status) {
+                       EnWorkshopStatus _status, String _technique) {
         this._ID = _ID;
         this._kitchenID = _kitchenID;
         this._chefID = _chefID;
@@ -25,6 +26,7 @@ public class ClsWorkshop {
         this._price = _price;
         this._endDate = _endDate;
         this._status = _status;
+        this._technique = _technique;
     }
 
 
@@ -90,5 +92,13 @@ public class ClsWorkshop {
 
     public void setStatus(EnWorkshopStatus _status) {
         this._status = _status;
+    }
+
+    public void setTechnique(String _technique){
+        this._technique = _technique;
+    }
+
+    public String getTechnique(){
+        return _technique;
     }
 }
