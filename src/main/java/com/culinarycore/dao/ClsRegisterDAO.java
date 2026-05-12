@@ -3,8 +3,8 @@ package com.culinarycore.dao;
 import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.dao.singleton.ClsDatabaseConnection;
 import com.culinarycore.model.ClsRegister;
-import com.culinarycore.model.EnPaymentStatus;
-import com.culinarycore.model.EnWorkshopStatus;
+import com.culinarycore.model.StatusEnums.EnPaymentStatus;
+import com.culinarycore.model.dto.ClsExpertiseEnrollmentDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -115,5 +115,30 @@ public class ClsRegisterDAO implements IRepository<ClsRegister> {
             System.out.println("Exception : " + es.getMessage());
         }
         return false;
+    }
+
+    public Optional<ClsExpertiseEnrollmentDTO> getTopExpertiseByEnrollments() {
+        Connection connection = _databaseConnection.getConnection();
+
+        String query = "SELECT TOP 1 c.expertise, COUNT(r.FK_StudentID) AS [Enrollment Count] " +
+                "FROM Register r " +
+                "INNER JOIN Workshop w ON r.FK_WorkshopID = w.ID " +
+                "INNER JOIN chef c ON w.FK_ChefID = c.ID " +
+                "GROUP BY c.expertise " +
+                "ORDER BY [Enrollment Count] DESC;";
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                return Optional.of(new ClsExpertiseEnrollmentDTO(
+                        resultSet.getString("expertise"),
+                        resultSet.getInt("Enrollment Count")
+                ));
+            }
+        } catch (SQLException es) {
+            System.out.println("Exception: " + es.getMessage());
+        }
+        return Optional.empty();
     }
 }

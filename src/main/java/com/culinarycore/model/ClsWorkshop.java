@@ -1,5 +1,7 @@
 package com.culinarycore.model;
 
+import com.culinarycore.model.StatusEnums.EnWorkshopStatus;
+
 import java.time.LocalDate;
 
 public class ClsWorkshop {
