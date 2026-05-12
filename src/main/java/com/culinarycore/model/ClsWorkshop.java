@@ -14,8 +14,8 @@ public class ClsWorkshop {
 
     public ClsWorkshop(int _ID, int _kitchenID,
                        int _chefID, String _title,
-                       LocalDate _startDate, double _price,
-                       LocalDate _endDate,
+                       LocalDate _startDate,
+                       LocalDate _endDate, double _price,
                        EnWorkshopStatus _status) {
         this._ID = _ID;
         this._kitchenID = _kitchenID;
