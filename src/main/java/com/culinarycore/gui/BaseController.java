@@ -6,24 +6,24 @@ import javafx.scene.control.Alert;
 public abstract class BaseController {
     protected KitchenService kitchenService;
     protected ChefService chefService;
-    protected WorkshopService workshopService;
-    protected StudentService studentService;
-    protected RegisterService registerService;
-    protected SupplierService supplierService;
-    protected IngredientBatchService batchService;
-    protected ConsumeService consumeService;
+    protected ClsWorkshopService workshopService;
+    protected ClsStudentService studentService;
+    protected ClsRegisterService registerService;
+    protected ClsSupplierService supplierService;
+    protected ClsIngredientBatchService batchService;
+    protected ClsConsumeService consumeService;
 
     public BaseController() {
         // Services injected at startup or instantiated here
         // For now, instantiate dummy instances to allow the app to run
         this.kitchenService = new KitchenService();
         this.chefService = new ChefService();
-        this.workshopService = new WorkshopService();
-        this.studentService = new StudentService();
-        this.registerService = new RegisterService();
-        this.supplierService = new SupplierService();
-        this.batchService = new IngredientBatchService();
-        this.consumeService = new ConsumeService();
+        this.workshopService = new ClsWorkshopService();
+        this.studentService = new ClsStudentService();
+        this.registerService = new ClsRegisterService();
+        this.supplierService = new ClsSupplierService();
+        this.batchService = new ClsIngredientBatchService();
+        this.consumeService = new ClsConsumeService();
     }
 
     public abstract void initialize();

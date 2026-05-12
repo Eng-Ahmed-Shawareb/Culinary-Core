@@ -157,11 +157,12 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
     }
 
     public List<ClsIngredientBatch> findByKitchenLastMonth(int kID) {
-
-        String query = "SELECT B.* FROM Ingredient_batch B " +
+        String query = "SELECT DISTINCT B.* FROM Ingredient_batch B " +
                 "JOIN Consume C ON B.ID = C.FK_BatchID " +
-                "WHERE C.FK_WorkshopID = ? " +
-                "AND C.[consuming date] >= DATEADD(month, -1, GETDATE())";
+                "JOIN Workshop W ON C.FK_WorkshopID = W.ID " +
+                "WHERE W.FK_KitchenID = ? " +
+                "AND C.[consuming date] >= DATEADD(month, DATEDIFF(month, 0, GETDATE()) - 1, 0) " +
+                "AND C.[consuming date] < DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0)";
 
         List<ClsIngredientBatch> batches = new ArrayList<>();
         Connection connection = _databaseConnection.getConnection();
@@ -182,7 +183,7 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
                 ));
             }
         } catch (SQLException e) {
-            System.out.println("Exception findByKitchen: " + e.getMessage());
+            System.out.println("Exception findByKitchenLastMonth: " + e.getMessage());
         }
         return batches;
     }
