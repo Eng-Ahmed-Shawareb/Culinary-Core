@@ -3,7 +3,7 @@ package com.culinarycore.dao;
 import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.dao.singleton.ClsDatabaseConnection;
 import com.culinarycore.model.ClsWorkshop;
-import com.culinarycore.model.EnWorkshopStatus;
+import com.culinarycore.model.StatusEnums.EnWorkshopStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

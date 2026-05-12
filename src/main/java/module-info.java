@@ -12,4 +12,6 @@ module com.culinarycore {
     
     opens com.culinarycore.model to javafx.base;
     exports com.culinarycore.model;
+    exports com.culinarycore.model.StatusEnums;
+    opens com.culinarycore.model.StatusEnums to javafx.base;
 }

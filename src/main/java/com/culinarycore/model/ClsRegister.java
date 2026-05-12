@@ -1,5 +1,7 @@
 package com.culinarycore.model;
 
+import com.culinarycore.model.StatusEnums.EnPaymentStatus;
+
 import java.time.LocalDate;
 
 public class ClsRegister{

@@ -6,9 +6,9 @@ import javafx.scene.control.Alert;
 public abstract class BaseController {
     protected KitchenService kitchenService;
     protected ChefService chefService;
-    protected WorkshopService workshopService;
+    protected ClsWorkshopService workshopService;
     protected StudentService studentService;
-    protected RegisterService registerService;
+    protected ClsRegisterService registerService;
     protected SupplierService supplierService;
     protected IngredientBatchService batchService;
     protected ConsumeService consumeService;
@@ -18,9 +18,9 @@ public abstract class BaseController {
         // For now, instantiate dummy instances to allow the app to run
         this.kitchenService = new KitchenService();
         this.chefService = new ChefService();
-        this.workshopService = new WorkshopService();
+        this.workshopService = new ClsWorkshopService();
         this.studentService = new StudentService();
-        this.registerService = new RegisterService();
+        this.registerService = new ClsRegisterService();
         this.supplierService = new SupplierService();
         this.batchService = new IngredientBatchService();
         this.consumeService = new ConsumeService();
