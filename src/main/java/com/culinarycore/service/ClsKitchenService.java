@@ -1,16 +1,14 @@
 package com.culinarycore.service;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import com.culinarycore.dao.ClsKitchenDAO;
 import com.culinarycore.dao.interfaces.IRepository;
-import com.culinarycore.model.ClsChef;
 import com.culinarycore.model.ClsKitchen;
 
-public class KitchenService {
+public class ClsKitchenService {
     IRepository<ClsKitchen>_kitchenDAO;
-    public KitchenService(){
+    public ClsKitchenService(){
         _kitchenDAO=new ClsKitchenDAO();
     }
     public Optional<ClsKitchen> getById(int id){

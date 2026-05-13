@@ -1,5 +1,4 @@
 package com.culinarycore.service;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +6,9 @@ import com.culinarycore.dao.ClsChefDAO;
 import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.model.ClsChef;
 
-public class ChefService {
+public class ClsChefService {
     private IRepository<ClsChef>_chefDAO;
-    public ChefService(){
+    public ClsChefService(){
         _chefDAO=new ClsChefDAO();
 
 

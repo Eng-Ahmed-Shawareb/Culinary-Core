@@ -4,8 +4,8 @@ import com.culinarycore.service.*;
 import javafx.scene.control.Alert;
 
 public abstract class BaseController {
-    protected KitchenService kitchenService;
-    protected ChefService chefService;
+    protected ClsKitchenService kitchenService;
+    protected ClsChefService chefService;
     protected ClsWorkshopService workshopService;
     protected ClsStudentService studentService;
     protected ClsRegisterService registerService;
@@ -16,8 +16,8 @@ public abstract class BaseController {
     public BaseController() {
         // Services injected at startup or instantiated here
         // For now, instantiate dummy instances to allow the app to run
-        this.kitchenService = new KitchenService();
-        this.chefService = new ChefService();
+        this.kitchenService = new ClsKitchenService();
+        this.chefService = new ClsChefService();
         this.workshopService = new ClsWorkshopService();
         this.studentService = new ClsStudentService();
         this.registerService = new ClsRegisterService();
