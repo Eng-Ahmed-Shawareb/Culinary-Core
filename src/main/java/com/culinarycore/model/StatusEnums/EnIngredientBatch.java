@@ -6,5 +6,8 @@ public enum EnIngredientBatch {
     FRESH,
     EXPIRING,
     EXPIRED,
-    USED
+    USED,
+    SEALED,
+    REFRIGERATED,
+    DRY
 }
