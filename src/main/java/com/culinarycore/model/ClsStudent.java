@@ -54,4 +54,9 @@ public class ClsStudent {
     public void setFirstName(String _firstName) {
         this._firstName = _firstName;
     }
+
+    @Override
+    public String toString() {
+        return _firstName + " " + _lastName;
+    }
 }

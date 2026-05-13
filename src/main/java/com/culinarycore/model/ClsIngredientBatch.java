@@ -78,4 +78,9 @@ public class ClsIngredientBatch {
     public void setID(int _ID) {
         this._ID = _ID;
     }
+
+    @Override
+    public String toString() {
+        return _name;
+    }
 }

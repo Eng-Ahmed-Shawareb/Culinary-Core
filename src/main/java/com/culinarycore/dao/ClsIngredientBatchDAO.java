@@ -74,18 +74,16 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
 
     @Override
     public boolean save(ClsIngredientBatch entity) {
-        String query = "INSERT INTO Ingredient_batch (ID, FK_SupplierID, name, units, [expiration date], [delivery date], state) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Ingredient_batch (FK_SupplierID, name, units, [expiration date], [delivery date], state) VALUES (?, ?, ?, ?, ?, ?)";
         Connection connection = _databaseConnection.getConnection();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, entity.getID());
-            statement.setInt(2, entity.getSupplierID());
-            statement.setString(3, entity.getName());
-            statement.setInt(4, entity.getUnit());
-            statement.setDate(5, Date.valueOf(entity.getExpirationDate()));
-            statement.setDate(6, Date.valueOf(entity.getDeliveryDate()));
-
-            statement.setString(7, entity.getState().name());
+            statement.setInt(1, entity.getSupplierID());
+            statement.setString(2, entity.getName());
+            statement.setInt(3, entity.getUnit());
+            statement.setDate(4, Date.valueOf(entity.getExpirationDate()));
+            statement.setDate(5, Date.valueOf(entity.getDeliveryDate()));
+            statement.setString(6, entity.getState().name());
 
             return statement.executeUpdate() > 0;
         } catch (SQLException es) {

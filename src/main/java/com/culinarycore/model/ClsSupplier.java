@@ -13,6 +13,11 @@ public class ClsSupplier {
         this._name = _name;
     }
 
+    @Override
+    public String toString() {
+        return _name;
+    }
+
     public int getID() {
         return _ID;
     }

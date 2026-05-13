@@ -78,43 +78,116 @@ public class DashboardController extends BaseController {
 
     public void runInquiry1_TopExpertise() {
         buildTableColumns(List.of("Expertise", "Enrollments"));
-        // Stub data as service does not return real data yet
-        ObservableList<String> row = FXCollections.observableArrayList("Baking", "150");
-        tableView.getItems().add(row);
         
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Enrollments");
-        series.getData().add(new XYChart.Data<>("Baking", 150));
+        java.util.Optional<com.culinarycore.model.dto.ClsExpertiseEnrollmentDTO> result = registerService.getTopExpertiseByEnrollments();
         barChart.getData().clear();
-        barChart.getData().add(series);
-        showChart("BarChart");
+        tableView.getItems().clear();
+        
+        if (result.isPresent()) {
+            com.culinarycore.model.dto.ClsExpertiseEnrollmentDTO dto = result.get();
+            ObservableList<String> row = FXCollections.observableArrayList(
+                dto.getExpertise(),
+                String.valueOf(dto.getEnrollmentCount())
+            );
+            tableView.getItems().add(row);
+            
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Enrollments");
+            series.getData().add(new XYChart.Data<>(dto.getExpertise(), dto.getEnrollmentCount()));
+            barChart.getData().add(series);
+            showChart("BarChart");
+        } else {
+            showChart("None");
+        }
     }
 
     public void runInquiry2_UnusedKitchens() {
         buildTableColumns(List.of("Kitchen ID", "Name", "Type"));
+        tableView.getItems().clear();
+        
+        java.util.List<com.culinarycore.model.ClsKitchen> unused = kitchenService.getUnusedLastMonth();
+        for (com.culinarycore.model.ClsKitchen k : unused) {
+            ObservableList<String> row = FXCollections.observableArrayList(
+                String.valueOf(k.getID()),
+                k.getName(),
+                k.getType()
+            );
+            tableView.getItems().add(row);
+        }
         showChart("None");
     }
 
     public void runInquiry3_TopSupplier() {
-        buildTableColumns(List.of("Supplier ID", "Name", "Total Quantity"));
-        
+        buildTableColumns(List.of("Supplier ID", "Name"));
+        tableView.getItems().clear();
         pieChart.getData().clear();
-        pieChart.getData().add(new PieChart.Data("Fresh Farms", 500));
-        showChart("PieChart");
+        
+        Object res = supplierService.getTopLastMonth();
+        if (res instanceof java.util.Optional) {
+            java.util.Optional<?> opt = (java.util.Optional<?>) res;
+            if (opt.isPresent()) {
+                com.culinarycore.model.ClsSupplier s = (com.culinarycore.model.ClsSupplier) opt.get();
+                ObservableList<String> row = FXCollections.observableArrayList(
+                    String.valueOf(s.getID()),
+                    s.getName()
+                );
+                tableView.getItems().add(row);
+                
+                pieChart.getData().add(new PieChart.Data(s.getName(), 1));
+                showChart("PieChart");
+                return;
+            }
+        }
+        showChart("None");
     }
 
     public void runInquiry4_InactiveChefs() {
         buildTableColumns(List.of("Chef ID", "First Name", "Last Name", "Expertise"));
+        tableView.getItems().clear();
+        
+        java.util.List<com.culinarycore.model.ClsChef> inactive = chefService.getInactiveLastMonth();
+        for (com.culinarycore.model.ClsChef c : inactive) {
+            ObservableList<String> row = FXCollections.observableArrayList(
+                String.valueOf(c.getID()),
+                c.getFirstName(),
+                c.getLastName(),
+                c.getExpertise()
+            );
+            tableView.getItems().add(row);
+        }
         showChart("None");
     }
 
     public void runInquiry5_BatchesByKitchen() {
         buildTableColumns(List.of("Kitchen Name", "Batch Name", "Quantity"));
+        tableView.getItems().clear();
+        
+        java.util.List<com.culinarycore.model.dto.ClsKitchenBatchReportDTO> report = batchService.getDashboardReport();
+        for (com.culinarycore.model.dto.ClsKitchenBatchReportDTO dto : report) {
+            ObservableList<String> row = FXCollections.observableArrayList(
+                dto.getKitchenName(),
+                dto.getBatchName(),
+                String.valueOf(dto.getConsumedQuantity())
+            );
+            tableView.getItems().add(row);
+        }
         showChart("None");
     }
 
     public void runInquiry6_StudentWorkshops() {
         buildTableColumns(List.of("First Name", "Last Name", "Phone", "Workshop Count"));
+        tableView.getItems().clear();
+        
+        java.util.List<com.culinarycore.model.dto.ClsStudentWorkshopCountDTO> students = studentService.getStudentsWithWorkShopCount();
+        for (com.culinarycore.model.dto.ClsStudentWorkshopCountDTO dto : students) {
+            ObservableList<String> row = FXCollections.observableArrayList(
+                dto.getFirstName(),
+                dto.getLastName(),
+                dto.getPhone(),
+                String.valueOf(dto.getWorkshopCount())
+            );
+            tableView.getItems().add(row);
+        }
         showChart("None");
     }
 

@@ -7,6 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextField;
 
 public class IngredientBatchController extends BaseController {
@@ -24,9 +26,32 @@ public class IngredientBatchController extends BaseController {
     @FXML private Button btnDelete;
     @FXML private Button btnClear;
 
+    private int currentSelectedId = -1;
+
     @Override
     public void initialize() {
         cmbState.getItems().addAll("Fresh", "Expiring", "Expired", "Used");
+        
+        TableColumn<ClsIngredientBatch, String> colName = new TableColumn<>("Name");
+        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<ClsIngredientBatch, Integer> colUnits = new TableColumn<>("Units");
+        colUnits.setCellValueFactory(new PropertyValueFactory<>("unit"));
+
+        TableColumn<ClsIngredientBatch, java.time.LocalDate> colDelivery = new TableColumn<>("Delivery Date");
+        colDelivery.setCellValueFactory(new PropertyValueFactory<>("deliveryDate"));
+
+        TableColumn<ClsIngredientBatch, java.time.LocalDate> colExpiry = new TableColumn<>("Expiry Date");
+        colExpiry.setCellValueFactory(new PropertyValueFactory<>("expirationDate"));
+
+        TableColumn<ClsIngredientBatch, Integer> colSupplier = new TableColumn<>("Supplier ID");
+        colSupplier.setCellValueFactory(new PropertyValueFactory<>("supplierID"));
+
+        TableColumn<ClsIngredientBatch, com.culinarycore.model.StatusEnums.EnIngredientBatch> colState = new TableColumn<>("State");
+        colState.setCellValueFactory(new PropertyValueFactory<>("state"));
+
+        tableView.getColumns().setAll(colName, colUnits, colSupplier, colDelivery, colExpiry, colState);
+
         loadData();
     }
 
@@ -40,7 +65,7 @@ public class IngredientBatchController extends BaseController {
 
     @Override
     public void clearForm() {
-
+        currentSelectedId = -1;
         txtName.clear();
         txtUnits.clear();
         cmbSupplier.getSelectionModel().clearSelection();
@@ -51,34 +76,117 @@ public class IngredientBatchController extends BaseController {
 
     @FXML
     public void onAdd_Click() {
-        showAlert("Added successfully!", false);
-        loadData();
-        clearForm();
+        if (txtName.getText().trim().isEmpty() || txtUnits.getText().trim().isEmpty() || 
+            cmbSupplier.getValue() == null || dtpDelivery.getValue() == null || 
+            dtpExpiry.getValue() == null || cmbState.getValue() == null) {
+            showAlert("Please fill in all fields.", true);
+            return;
+        }
+
+        try {
+            int units = Integer.parseInt(txtUnits.getText().trim());
+            ClsIngredientBatch newBatch = new ClsIngredientBatch(
+                -1,
+                cmbSupplier.getValue().getID(),
+                units,
+                txtName.getText().trim(),
+                dtpExpiry.getValue(),
+                dtpDelivery.getValue(),
+                com.culinarycore.model.StatusEnums.EnIngredientBatch.valueOf(cmbState.getValue().toUpperCase())
+            );
+            
+            boolean success = batchService.addBatch(newBatch);
+            if (success) {
+                showAlert("Ingredient batch added successfully!", false);
+                loadData();
+                clearForm();
+            } else {
+                showAlert("Failed to add ingredient batch.", true);
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Units must be a valid integer number.", true);
+        }
     }
 
     @FXML
     public void onUpdate_Click() {
-        showAlert("Updated successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a batch to update.", true);
+            return;
+        }
+        if (txtName.getText().trim().isEmpty() || txtUnits.getText().trim().isEmpty() || 
+            cmbSupplier.getValue() == null || dtpDelivery.getValue() == null || 
+            dtpExpiry.getValue() == null || cmbState.getValue() == null) {
+            showAlert("Please fill in all fields.", true);
+            return;
+        }
+
+        try {
+            int units = Integer.parseInt(txtUnits.getText().trim());
+            ClsIngredientBatch updatedBatch = new ClsIngredientBatch(
+                currentSelectedId,
+                cmbSupplier.getValue().getID(),
+                units,
+                txtName.getText().trim(),
+                dtpExpiry.getValue(),
+                dtpDelivery.getValue(),
+                com.culinarycore.model.StatusEnums.EnIngredientBatch.valueOf(cmbState.getValue().toUpperCase())
+            );
+            
+            boolean success = batchService.updateBatch(updatedBatch);
+            if (success) {
+                showAlert("Ingredient batch updated successfully!", false);
+                loadData();
+                clearForm();
+            } else {
+                showAlert("Failed to update ingredient batch.", true);
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Units must be a valid integer number.", true);
+        }
     }
 
     @FXML
     public void onDelete_Click() {
-        showAlert("Deleted successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a batch to delete.", true);
+            return;
+        }
+        
+        boolean success = batchService.deleteBatch(currentSelectedId);
+        
+        if (success) {
+            showAlert("Ingredient batch deleted successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to delete ingredient batch. It may be in use.", true);
+        }
     }
 
     @FXML
     public void onRowSelect() {
         ClsIngredientBatch selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-
+            currentSelectedId = selected.getID();
             txtName.setText(selected.getName());
             txtUnits.setText(String.valueOf(selected.getUnit()));
             dtpDelivery.setValue(selected.getDeliveryDate());
             dtpExpiry.setValue(selected.getExpirationDate());
+            
+            for (String state : cmbState.getItems()) {
+                if (state.equalsIgnoreCase(selected.getState().name())) {
+                    cmbState.setValue(state);
+                    break;
+                }
+            }
+            
+            for (ClsSupplier s : cmbSupplier.getItems()) {
+                if (s.getID() == selected.getSupplierID()) {
+                    cmbSupplier.setValue(s);
+                    break;
+                }
+            }
         }
     }
 }

@@ -103,4 +103,9 @@ public class ClsWorkshop {
     public String getTechnique(){
         return _technique;
     }
+
+    @Override
+    public String toString() {
+        return _title;
+    }
 }
