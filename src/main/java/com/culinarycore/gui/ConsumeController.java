@@ -29,11 +29,23 @@ public class ConsumeController extends BaseController {
 
     @Override
     public void initialize() {
-        TableColumn<ClsConsume, Integer> colBatch = new TableColumn<>("Batch ID");
-        colBatch.setCellValueFactory(new PropertyValueFactory<>("batchID"));
+        TableColumn<ClsConsume, String> colBatch = new TableColumn<>("Batch");
+        colBatch.setCellValueFactory(cellData -> {
+            int bId = cellData.getValue().getBatchID();
+            for (com.culinarycore.model.ClsIngredientBatch b : batchService.getAll()) {
+                if (b.getID() == bId) return new javafx.beans.property.SimpleStringProperty(b.getName());
+            }
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(bId));
+        });
 
-        TableColumn<ClsConsume, Integer> colWorkshop = new TableColumn<>("Workshop ID");
-        colWorkshop.setCellValueFactory(new PropertyValueFactory<>("workshopID"));
+        TableColumn<ClsConsume, String> colWorkshop = new TableColumn<>("Workshop");
+        colWorkshop.setCellValueFactory(cellData -> {
+            int wId = cellData.getValue().getWorkshopID();
+            for (ClsWorkshop w : cmbWorkshop.getItems()) {
+                if (w.getID() == wId) return new javafx.beans.property.SimpleStringProperty(w.getTitle());
+            }
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(wId));
+        });
 
         TableColumn<ClsConsume, Integer> colQuantity = new TableColumn<>("Quantity");
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
@@ -42,6 +54,7 @@ public class ConsumeController extends BaseController {
         colDate.setCellValueFactory(new PropertyValueFactory<>("consumeDate"));
 
         tableView.getColumns().setAll(colBatch, colWorkshop, colQuantity, colDate);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         loadData();
     }
@@ -51,7 +64,11 @@ public class ConsumeController extends BaseController {
         tableView.getItems().clear();
         tableView.getItems().addAll(consumeService.getAll());
         cmbBatch.getItems().clear();
-        cmbBatch.getItems().addAll(batchService.getAll());
+        for (ClsIngredientBatch b : batchService.getAll()) {
+            if (b.getState() != com.culinarycore.model.StatusEnums.EnIngredientBatch.CONSUMED) {
+                cmbBatch.getItems().add(b);
+            }
+        }
         cmbWorkshop.getItems().clear();
         cmbWorkshop.getItems().addAll(workshopService.getAll());
     }
@@ -89,7 +106,7 @@ public class ConsumeController extends BaseController {
                 loadData();
                 clearForm();
             } else {
-                showAlert("Failed to log consumption.", true);
+                showAlert("Failed to log consumption. Quantity may exceed remaining units.", true);
             }
         } catch (NumberFormatException e) {
             showAlert("Quantity must be a valid integer.", true);
@@ -120,7 +137,7 @@ public class ConsumeController extends BaseController {
                 loadData();
                 clearForm();
             } else {
-                showAlert("Failed to update quantity.", true);
+                showAlert("Failed to update quantity. Ensure it doesn't exceed available units.", true);
             }
         } catch (NumberFormatException e) {
             showAlert("Quantity must be a valid integer.", true);

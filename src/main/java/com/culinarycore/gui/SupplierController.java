@@ -10,22 +10,32 @@ import javafx.scene.control.TextField;
 
 public class SupplierController extends BaseController {
 
-    @FXML private TableView<ClsSupplier> tableView;
+    @FXML
+    private TableView<ClsSupplier> tableView;
 
-    @FXML private TextField txtName;
-    @FXML private Button btnAdd;
-    @FXML private Button btnUpdate;
-    @FXML private Button btnDelete;
-    @FXML private Button btnClear;
+    @FXML
+    private TextField txtName;
+    @FXML
+    private Button btnAdd;
+    @FXML
+    private Button btnUpdate;
+    @FXML
+    private Button btnDelete;
+    @FXML
+    private Button btnClear;
 
     private int currentSelectedId = -1;
 
     @Override
     public void initialize() {
+        TableColumn<ClsSupplier, Integer> colID = new TableColumn<>("ID");
+        colID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+
         TableColumn<ClsSupplier, String> colName = new TableColumn<>("Name");
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        
-        tableView.getColumns().setAll(colName);
+
+        tableView.getColumns().setAll(colID, colName);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         loadData();
     }
@@ -48,10 +58,10 @@ public class SupplierController extends BaseController {
             showAlert("Please fill in the supplier name.", true);
             return;
         }
-        
+
         ClsSupplier newSupplier = new ClsSupplier(txtName.getText().trim());
         boolean success = supplierService.addSupplier(newSupplier);
-        
+
         if (success) {
             showAlert("Supplier added successfully!", false);
             loadData();
@@ -74,7 +84,7 @@ public class SupplierController extends BaseController {
 
         ClsSupplier updatedSupplier = new ClsSupplier(currentSelectedId, txtName.getText().trim());
         boolean success = supplierService.updateSupplier(updatedSupplier);
-        
+
         if (success) {
             showAlert("Supplier updated successfully!", false);
             loadData();
@@ -90,9 +100,9 @@ public class SupplierController extends BaseController {
             showAlert("Please select a supplier to delete.", true);
             return;
         }
-        
+
         boolean success = supplierService.deleteSupplier(currentSelectedId);
-        
+
         if (success) {
             showAlert("Supplier deleted successfully!", false);
             loadData();

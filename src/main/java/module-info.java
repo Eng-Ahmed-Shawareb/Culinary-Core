@@ -4,6 +4,7 @@ module com.culinarycore {
     requires java.sql;
     requires java.naming;
 
+    requires javafx.base;
 
     opens com.culinarycore to javafx.fxml;
     exports com.culinarycore;
@@ -15,4 +16,7 @@ module com.culinarycore {
     exports com.culinarycore.model;
     exports com.culinarycore.model.StatusEnums;
     opens com.culinarycore.model.StatusEnums to javafx.base;
+
+    opens com.culinarycore.model.dto to javafx.base;
+    exports com.culinarycore.model.dto;
 }

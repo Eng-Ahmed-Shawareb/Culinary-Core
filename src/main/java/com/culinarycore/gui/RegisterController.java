@@ -28,13 +28,25 @@ public class RegisterController extends BaseController {
 
     @Override
     public void initialize() {
-        cmbState.getItems().addAll("Pending", "Paid", "Cancelled");
+        cmbState.getItems().addAll("PENDING", "CONFIRMED");
         
-        TableColumn<ClsRegister, Integer> colStudent = new TableColumn<>("Student ID");
-        colStudent.setCellValueFactory(new PropertyValueFactory<>("studentID"));
+        TableColumn<ClsRegister, String> colStudent = new TableColumn<>("Student");
+        colStudent.setCellValueFactory(cellData -> {
+            int sId = cellData.getValue().getStudentID();
+            for (ClsStudent s : cmbStudent.getItems()) {
+                if (s.getID() == sId) return new javafx.beans.property.SimpleStringProperty(s.getFirstName() + " " + s.getLastName());
+            }
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(sId));
+        });
 
-        TableColumn<ClsRegister, Integer> colWorkshop = new TableColumn<>("Workshop ID");
-        colWorkshop.setCellValueFactory(new PropertyValueFactory<>("workshopID"));
+        TableColumn<ClsRegister, String> colWorkshop = new TableColumn<>("Workshop");
+        colWorkshop.setCellValueFactory(cellData -> {
+            int wId = cellData.getValue().getWorkshopID();
+            for (ClsWorkshop w : cmbWorkshop.getItems()) {
+                if (w.getID() == wId) return new javafx.beans.property.SimpleStringProperty(w.getTitle());
+            }
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(wId));
+        });
 
         TableColumn<ClsRegister, java.time.LocalDate> colDate = new TableColumn<>("Register Date");
         colDate.setCellValueFactory(new PropertyValueFactory<>("registerDate"));
@@ -43,6 +55,7 @@ public class RegisterController extends BaseController {
         colState.setCellValueFactory(new PropertyValueFactory<>("paymentStatus"));
 
         tableView.getColumns().setAll(colStudent, colWorkshop, colDate, colState);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         loadData();
     }

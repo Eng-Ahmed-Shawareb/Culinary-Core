@@ -30,12 +30,15 @@ public class IngredientBatchController extends BaseController {
 
     @Override
     public void initialize() {
-        cmbState.getItems().addAll("Fresh", "Expiring", "Expired", "Used");
+        cmbState.getItems().addAll("CONSUMED", "EXIST");
         
+        TableColumn<ClsIngredientBatch, Integer> colID = new TableColumn<>("ID");
+        colID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+
         TableColumn<ClsIngredientBatch, String> colName = new TableColumn<>("Name");
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<ClsIngredientBatch, Integer> colUnits = new TableColumn<>("Units");
+        TableColumn<ClsIngredientBatch, Integer> colUnits = new TableColumn<>("Remaining Units");
         colUnits.setCellValueFactory(new PropertyValueFactory<>("unit"));
 
         TableColumn<ClsIngredientBatch, java.time.LocalDate> colDelivery = new TableColumn<>("Delivery Date");
@@ -44,13 +47,20 @@ public class IngredientBatchController extends BaseController {
         TableColumn<ClsIngredientBatch, java.time.LocalDate> colExpiry = new TableColumn<>("Expiry Date");
         colExpiry.setCellValueFactory(new PropertyValueFactory<>("expirationDate"));
 
-        TableColumn<ClsIngredientBatch, Integer> colSupplier = new TableColumn<>("Supplier ID");
-        colSupplier.setCellValueFactory(new PropertyValueFactory<>("supplierID"));
+        TableColumn<ClsIngredientBatch, String> colSupplier = new TableColumn<>("Supplier");
+        colSupplier.setCellValueFactory(cellData -> {
+            int sId = cellData.getValue().getSupplierID();
+            for (com.culinarycore.model.ClsSupplier s : cmbSupplier.getItems()) {
+                if (s.getID() == sId) return new javafx.beans.property.SimpleStringProperty(s.getName());
+            }
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(sId));
+        });
 
         TableColumn<ClsIngredientBatch, com.culinarycore.model.StatusEnums.EnIngredientBatch> colState = new TableColumn<>("State");
         colState.setCellValueFactory(new PropertyValueFactory<>("state"));
 
-        tableView.getColumns().setAll(colName, colUnits, colSupplier, colDelivery, colExpiry, colState);
+        tableView.getColumns().setAll(colID, colName, colUnits, colSupplier, colDelivery, colExpiry, colState);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         loadData();
     }

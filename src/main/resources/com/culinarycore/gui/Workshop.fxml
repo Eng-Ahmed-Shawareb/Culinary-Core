@@ -40,6 +40,9 @@
                 
                 <Label styleClass="form-label" text="State:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                 <ComboBox fx:id="cmbState" prefWidth="200.0" promptText="Select State" styleClass="combo-box" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+
+                <Label styleClass="form-label" text="Technique:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <TextField fx:id="txtTechnique" promptText="Technique" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             </children>
         </GridPane>
         

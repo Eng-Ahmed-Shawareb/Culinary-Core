@@ -18,6 +18,7 @@ public class WorkshopController extends BaseController {
 
     @FXML private TextField txtTitle;
     @FXML private TextField txtPrice;
+    @FXML private TextField txtTechnique;
     @FXML private ComboBox<ClsKitchen> cmbKitchen;
     @FXML private ComboBox<ClsChef> cmbChef;
     @FXML private DatePicker dtpStart;
@@ -32,7 +33,10 @@ public class WorkshopController extends BaseController {
 
     @Override
     public void initialize() {
-        cmbState.getItems().addAll("Scheduled", "Active", "Completed", "Cancelled");
+        cmbState.getItems().addAll("ACTIVE", "COMPLETED", "SCHEDULED");
+
+        TableColumn<ClsWorkshop, Integer> colID = new TableColumn<>("ID");
+        colID.setCellValueFactory(new PropertyValueFactory<>("ID"));
 
         TableColumn<ClsWorkshop, String> colTitle = new TableColumn<>("Title");
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -46,16 +50,32 @@ public class WorkshopController extends BaseController {
         TableColumn<ClsWorkshop, java.time.LocalDate> colEnd = new TableColumn<>("End Date");
         colEnd.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         
-        TableColumn<ClsWorkshop, Integer> colKitchen = new TableColumn<>("Kitchen ID");
-        colKitchen.setCellValueFactory(new PropertyValueFactory<>("kitchenID"));
+        TableColumn<ClsWorkshop, String> colKitchen = new TableColumn<>("Kitchen");
+        colKitchen.setCellValueFactory(cellData -> {
+            int kId = cellData.getValue().getKitchenID();
+            for (ClsKitchen k : cmbKitchen.getItems()) {
+                if (k.getID() == kId) return new javafx.beans.property.SimpleStringProperty(k.getName());
+            }
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(kId));
+        });
         
-        TableColumn<ClsWorkshop, Integer> colChef = new TableColumn<>("Chef ID");
-        colChef.setCellValueFactory(new PropertyValueFactory<>("chefID"));
+        TableColumn<ClsWorkshop, String> colChef = new TableColumn<>("Chef");
+        colChef.setCellValueFactory(cellData -> {
+            int cId = cellData.getValue().getChefID();
+            for (ClsChef c : cmbChef.getItems()) {
+                if (c.getID() == cId) return new javafx.beans.property.SimpleStringProperty(c.getFirstName() + " " + c.getLastName());
+            }
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(cId));
+        });
 
         TableColumn<ClsWorkshop, String> colStatus = new TableColumn<>("Status");
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        tableView.getColumns().setAll(colTitle, colKitchen, colChef, colStart, colEnd, colPrice, colStatus);
+        TableColumn<ClsWorkshop, String> colTechnique = new TableColumn<>("Technique");
+        colTechnique.setCellValueFactory(new PropertyValueFactory<>("technique"));
+
+        tableView.getColumns().setAll(colID, colTitle, colKitchen, colChef, colStart, colEnd, colPrice, colStatus, colTechnique);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         loadData();
     }
@@ -75,6 +95,7 @@ public class WorkshopController extends BaseController {
         currentSelectedId = -1;
         txtTitle.clear();
         txtPrice.clear();
+        txtTechnique.clear();
         cmbKitchen.getSelectionModel().clearSelection();
         cmbChef.getSelectionModel().clearSelection();
         dtpStart.setValue(null);
@@ -85,6 +106,7 @@ public class WorkshopController extends BaseController {
     @FXML
     public void onAdd_Click() {
         if (txtTitle.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || 
+            txtTechnique.getText().trim().isEmpty() ||
             cmbKitchen.getValue() == null || cmbChef.getValue() == null || 
             dtpStart.getValue() == null || dtpEnd.getValue() == null || 
             cmbState.getValue() == null) {
@@ -103,7 +125,7 @@ public class WorkshopController extends BaseController {
                 dtpEnd.getValue(),
                 price,
                 com.culinarycore.model.StatusEnums.EnWorkshopStatus.valueOf(cmbState.getValue()),
-                "N/A"
+                txtTechnique.getText().trim()
             );
             
             boolean success = workshopService.addWorkshop(newWorkshop);
@@ -126,6 +148,7 @@ public class WorkshopController extends BaseController {
             return;
         }
         if (txtTitle.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || 
+            txtTechnique.getText().trim().isEmpty() ||
             cmbKitchen.getValue() == null || cmbChef.getValue() == null || 
             dtpStart.getValue() == null || dtpEnd.getValue() == null || 
             cmbState.getValue() == null) {
@@ -144,7 +167,7 @@ public class WorkshopController extends BaseController {
                 dtpEnd.getValue(),
                 price,
                 com.culinarycore.model.StatusEnums.EnWorkshopStatus.valueOf(cmbState.getValue()),
-                "N/A"
+                txtTechnique.getText().trim()
             );
             
             boolean success = workshopService.updateWorkshop(updatedWorkshop);
@@ -185,6 +208,7 @@ public class WorkshopController extends BaseController {
             currentSelectedId = selected.getID();
             txtTitle.setText(selected.getTitle());
             txtPrice.setText(String.valueOf(selected.getPrice()));
+            txtTechnique.setText(selected.getTechnique());
             dtpStart.setValue(selected.getStartDate());
             dtpEnd.setValue(selected.getEndDate());
             cmbState.setValue(selected.getStatus().name());

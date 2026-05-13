@@ -19,12 +19,18 @@ import java.util.List;
 
 public class DashboardController extends BaseController {
 
-    @FXML private ComboBox<String> cmbInquiry;
-    @FXML private Button btnRun;
-    @FXML private TableView<ObservableList<String>> tableView;
-    @FXML private Label lblTitle;
-    @FXML private Label lblSubtitle;
-    @FXML private StackPane chartPane;
+    @FXML
+    private ComboBox<String> cmbInquiry;
+    @FXML
+    private Button btnRun;
+    @FXML
+    private TableView<ObservableList<String>> tableView;
+    @FXML
+    private Label lblTitle;
+    @FXML
+    private Label lblSubtitle;
+    @FXML
+    private StackPane chartPane;
 
     private BarChart<String, Number> barChart;
     private PieChart pieChart;
@@ -32,26 +38,26 @@ public class DashboardController extends BaseController {
     @Override
     public void initialize() {
         cmbInquiry.getItems().addAll(
-            "1. Top expertise by enrollments",
-            "2. Kitchens unused last month",
-            "3. Top supplier by qty last month",
-            "4. Inactive chefs last month",
-            "5. Batches per kitchen last month",
-            "6. Student contact & workshop count"
-        );
-        
+                "1. Top expertise by enrollments",
+                "2. Kitchens unused last month",
+                "3. Top supplier by qty last month",
+                "4. Inactive chefs last month",
+                "5. Batches per kitchen last month",
+                "6. Student contact & workshop count");
+
         // Setup empty charts
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         barChart = new BarChart<>(xAxis, yAxis);
         barChart.setAnimated(false);
-        
+
         pieChart = new PieChart();
         pieChart.setAnimated(false);
     }
 
     @Override
-    public void loadData() {}
+    public void loadData() {
+    }
 
     @Override
     public void clearForm() {
@@ -63,17 +69,24 @@ public class DashboardController extends BaseController {
     @FXML
     public void onRun_Click() {
         String selected = cmbInquiry.getValue();
-        if (selected == null) return;
-        
+        if (selected == null)
+            return;
+
         clearForm();
         lblTitle.setText(selected);
-        
-        if (selected.startsWith("1")) runInquiry1_TopExpertise();
-        else if (selected.startsWith("2")) runInquiry2_UnusedKitchens();
-        else if (selected.startsWith("3")) runInquiry3_TopSupplier();
-        else if (selected.startsWith("4")) runInquiry4_InactiveChefs();
-        else if (selected.startsWith("5")) runInquiry5_BatchesByKitchen();
-        else if (selected.startsWith("6")) runInquiry6_StudentWorkshops();
+
+        if (selected.startsWith("1"))
+            runInquiry1_TopExpertise();
+        else if (selected.startsWith("2"))
+            runInquiry2_UnusedKitchens();
+        else if (selected.startsWith("3"))
+            runInquiry3_TopSupplier();
+        else if (selected.startsWith("4"))
+            runInquiry4_InactiveChefs();
+        else if (selected.startsWith("5"))
+            runInquiry5_BatchesByKitchen();
+        else if (selected.startsWith("6"))
+            runInquiry6_StudentWorkshops();
     }
 
     public void runInquiry1_TopExpertise() {
@@ -118,25 +131,23 @@ public class DashboardController extends BaseController {
     }
 
     public void runInquiry3_TopSupplier() {
-        buildTableColumns(List.of("Supplier ID", "Name"));
+        buildTableColumns(List.of("Supplier ID", "Name", "Total Quantity"));
         tableView.getItems().clear();
         pieChart.getData().clear();
         
-        Object res = supplierService.getTopLastMonth();
-        if (res instanceof java.util.Optional) {
-            java.util.Optional<?> opt = (java.util.Optional<?>) res;
-            if (opt.isPresent()) {
-                com.culinarycore.model.ClsSupplier s = (com.culinarycore.model.ClsSupplier) opt.get();
-                ObservableList<String> row = FXCollections.observableArrayList(
-                    String.valueOf(s.getID()),
-                    s.getName()
-                );
-                tableView.getItems().add(row);
-                
-                pieChart.getData().add(new PieChart.Data(s.getName(), 1));
-                showChart("PieChart");
-                return;
-            }
+        java.util.Optional<com.culinarycore.model.dto.ClsSupplierTopDTO> opt = supplierService.getTopSupplierLastMonth();
+        if (opt.isPresent()) {
+            com.culinarycore.model.dto.ClsSupplierTopDTO dto = opt.get();
+            ObservableList<String> row = FXCollections.observableArrayList(
+                String.valueOf(dto.getId()),
+                dto.getName(),
+                String.valueOf(dto.getTotalQuantitySupplied())
+            );
+            tableView.getItems().add(row);
+            
+            pieChart.getData().add(new PieChart.Data(dto.getName(), dto.getTotalQuantitySupplied()));
+            showChart("PieChart");
+            return;
         }
         showChart("None");
     }
@@ -204,6 +215,7 @@ public class DashboardController extends BaseController {
             });
             tableView.getColumns().add(column);
         }
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void showChart(String type) {

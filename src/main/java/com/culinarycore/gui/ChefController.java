@@ -10,34 +10,47 @@ import javafx.scene.control.TextField;
 
 public class ChefController extends BaseController {
 
-    @FXML private TableView<ClsChef> tableView;
+    @FXML
+    private TableView<ClsChef> tableView;
 
-    @FXML private TextField txtFirstName;
-    @FXML private TextField txtLastName;
-    @FXML private TextField txtBio;
-    @FXML private TextField txtExpertise;
-    @FXML private Button btnAdd;
-    @FXML private Button btnUpdate;
-    @FXML private Button btnDelete;
-    @FXML private Button btnClear;
+    @FXML
+    private TextField txtFirstName;
+    @FXML
+    private TextField txtLastName;
+    @FXML
+    private TextField txtBio;
+    @FXML
+    private TextField txtExpertise;
+    @FXML
+    private Button btnAdd;
+    @FXML
+    private Button btnUpdate;
+    @FXML
+    private Button btnDelete;
+    @FXML
+    private Button btnClear;
 
     private int currentSelectedId = -1;
 
     @Override
     public void initialize() {
+        TableColumn<ClsChef, Integer> colID = new TableColumn<>("ID");
+        colID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+
         TableColumn<ClsChef, String> colFirstName = new TableColumn<>("First Name");
         colFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        
+
         TableColumn<ClsChef, String> colLastName = new TableColumn<>("Last Name");
         colLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        
+
         TableColumn<ClsChef, String> colExpertise = new TableColumn<>("Expertise");
         colExpertise.setCellValueFactory(new PropertyValueFactory<>("expertise"));
-        
+
         TableColumn<ClsChef, String> colBio = new TableColumn<>("Bio");
         colBio.setCellValueFactory(new PropertyValueFactory<>("bio"));
-        
-        tableView.getColumns().setAll(colFirstName, colLastName, colExpertise, colBio);
+
+        tableView.getColumns().setAll(colID, colFirstName, colLastName, colExpertise, colBio);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         loadData();
     }
@@ -63,15 +76,14 @@ public class ChefController extends BaseController {
             showAlert("Please fill in required fields (First and Last name).", true);
             return;
         }
-        
+
         ClsChef newChef = new ClsChef(
-            txtBio.getText().trim(),
-            txtFirstName.getText().trim(),
-            txtLastName.getText().trim(),
-            txtExpertise.getText().trim()
-        );
+                txtBio.getText().trim(),
+                txtFirstName.getText().trim(),
+                txtLastName.getText().trim(),
+                txtExpertise.getText().trim());
         boolean success = chefService.addChef(newChef);
-        
+
         if (success) {
             showAlert("Chef added successfully!", false);
             loadData();
@@ -93,14 +105,13 @@ public class ChefController extends BaseController {
         }
 
         ClsChef updatedChef = new ClsChef(
-            txtBio.getText().trim(),
-            txtFirstName.getText().trim(),
-            txtLastName.getText().trim(),
-            txtExpertise.getText().trim()
-        );
+                txtBio.getText().trim(),
+                txtFirstName.getText().trim(),
+                txtLastName.getText().trim(),
+                txtExpertise.getText().trim());
         updatedChef.setID(currentSelectedId);
         boolean success = chefService.updateChef(updatedChef);
-        
+
         if (success) {
             showAlert("Chef updated successfully!", false);
             loadData();
@@ -116,9 +127,9 @@ public class ChefController extends BaseController {
             showAlert("Please select a chef to delete.", true);
             return;
         }
-        
+
         boolean success = chefService.deleteChef(currentSelectedId);
-        
+
         if (success) {
             showAlert("Chef deleted successfully!", false);
             loadData();
