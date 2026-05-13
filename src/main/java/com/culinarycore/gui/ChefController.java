@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 public class ChefController extends BaseController {
 
     @FXML private TableView<ClsChef> tableView;
-    @FXML private TextField txtID;
+
     @FXML private TextField txtFirstName;
     @FXML private TextField txtLastName;
     @FXML private TextField txtBio;
@@ -32,7 +32,7 @@ public class ChefController extends BaseController {
 
     @Override
     public void clearForm() {
-        txtID.clear();
+
         txtFirstName.clear();
         txtLastName.clear();
         txtBio.clear();
@@ -64,7 +64,7 @@ public class ChefController extends BaseController {
     public void onRowSelect() {
         ClsChef selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            txtID.setText(String.valueOf(selected.getID()));
+
             txtFirstName.setText(selected.getFirstName());
             txtLastName.setText(selected.getLastName());
             txtBio.setText(selected.getBio());

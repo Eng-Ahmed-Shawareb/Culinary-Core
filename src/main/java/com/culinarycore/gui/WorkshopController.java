@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class WorkshopController extends BaseController {
 
     @FXML private TableView<ClsWorkshop> tableView;
-    @FXML private TextField txtID;
+
     @FXML private TextField txtTitle;
     @FXML private TextField txtPrice;
     @FXML private ComboBox<ClsKitchen> cmbKitchen;
@@ -45,7 +45,7 @@ public class WorkshopController extends BaseController {
 
     @Override
     public void clearForm() {
-        txtID.clear();
+
         txtTitle.clear();
         txtPrice.clear();
         cmbKitchen.getSelectionModel().clearSelection();
@@ -80,7 +80,7 @@ public class WorkshopController extends BaseController {
     public void onRowSelect() {
         ClsWorkshop selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            txtID.setText(String.valueOf(selected.getID()));
+
             txtTitle.setText(selected.getTitle());
             txtPrice.setText(String.valueOf(selected.getPrice()));
             dtpStart.setValue(selected.getStartDate());

@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 public class StudentController extends BaseController {
 
     @FXML private TableView<ClsStudent> tableView;
-    @FXML private TextField txtID;
+
     @FXML private TextField txtFirstName;
     @FXML private TextField txtLastName;
     @FXML private ComboBox<String> cmbGender;
@@ -22,7 +22,7 @@ public class StudentController extends BaseController {
 
     @Override
     public void initialize() {
-        cmbGender.getItems().addAll("M", "F", "O");
+        cmbGender.getItems().addAll("M", "F");
         loadData();
     }
 
@@ -34,7 +34,7 @@ public class StudentController extends BaseController {
 
     @Override
     public void clearForm() {
-        txtID.clear();
+
         txtFirstName.clear();
         txtLastName.clear();
         cmbGender.getSelectionModel().clearSelection();
@@ -66,7 +66,7 @@ public class StudentController extends BaseController {
     public void onRowSelect() {
         ClsStudent selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            txtID.setText(String.valueOf(selected.getID()));
+
             txtFirstName.setText(selected.getFirstName());
             txtLastName.setText(selected.getLastName());
             txtPhone.setText(selected.getPhone());

@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 public class KitchenController extends BaseController {
 
     @FXML private TableView<ClsKitchen> tableView;
-    @FXML private TextField txtID;
+
     @FXML private TextField txtName;
     @FXML private TextField txtType;
     @FXML private Button btnAdd;
@@ -30,7 +30,7 @@ public class KitchenController extends BaseController {
 
     @Override
     public void clearForm() {
-        txtID.clear();
+
         txtName.clear();
         txtType.clear();
     }
@@ -63,7 +63,7 @@ public class KitchenController extends BaseController {
     public void onRowSelect() {
         ClsKitchen selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            txtID.setText(String.valueOf(selected.getID()));
+
             txtName.setText(selected.getName());
             txtType.setText(selected.getType());
         }

@@ -16,11 +16,10 @@
         
         <GridPane hgap="15.0" styleClass="form-grid" vgap="15.0">
             <children>
-                <Label styleClass="form-label" text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                <TextField fx:id="txtID" disable="true" editable="false" promptText="Auto-generated" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
                 
-                <Label styleClass="form-label" text="First Name:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                <TextField fx:id="txtFirstName" promptText="First Name" styleClass="text-field" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                <Label styleClass="form-label" text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="txtFirstName" promptText="First Name" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                 
                 <Label styleClass="form-label" text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                 <TextField fx:id="txtLastName" promptText="Last Name" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />

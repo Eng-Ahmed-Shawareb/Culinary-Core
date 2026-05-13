@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 public class SupplierController extends BaseController {
 
     @FXML private TableView<ClsSupplier> tableView;
-    @FXML private TextField txtID;
+
     @FXML private TextField txtName;
     @FXML private Button btnAdd;
     @FXML private Button btnUpdate;
@@ -29,7 +29,7 @@ public class SupplierController extends BaseController {
 
     @Override
     public void clearForm() {
-        txtID.clear();
+
         txtName.clear();
     }
 
@@ -58,7 +58,7 @@ public class SupplierController extends BaseController {
     public void onRowSelect() {
         ClsSupplier selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            txtID.setText(String.valueOf(selected.getID()));
+
             txtName.setText(selected.getName());
         }
     }

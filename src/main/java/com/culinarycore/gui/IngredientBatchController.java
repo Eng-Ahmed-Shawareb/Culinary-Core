@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 public class IngredientBatchController extends BaseController {
 
     @FXML private TableView<ClsIngredientBatch> tableView;
-    @FXML private TextField txtID;
+
     @FXML private TextField txtName;
     @FXML private TextField txtUnits;
     @FXML private ComboBox<ClsSupplier> cmbSupplier;
@@ -40,7 +40,7 @@ public class IngredientBatchController extends BaseController {
 
     @Override
     public void clearForm() {
-        txtID.clear();
+
         txtName.clear();
         txtUnits.clear();
         cmbSupplier.getSelectionModel().clearSelection();
@@ -74,7 +74,7 @@ public class IngredientBatchController extends BaseController {
     public void onRowSelect() {
         ClsIngredientBatch selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            txtID.setText(String.valueOf(selected.getID()));
+
             txtName.setText(selected.getName());
             txtUnits.setText(String.valueOf(selected.getUnit()));
             dtpDelivery.setValue(selected.getDeliveryDate());
