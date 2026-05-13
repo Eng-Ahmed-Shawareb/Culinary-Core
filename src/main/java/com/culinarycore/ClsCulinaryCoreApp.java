@@ -1,6 +1,7 @@
 package com.culinarycore;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class ClsCulinaryCoreApp extends Application {
@@ -12,6 +13,7 @@ public class ClsCulinaryCoreApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Culinary Studio & Gourmet Ingredient Network");
+        primaryStage.getIcons().add(new Image(ClsCulinaryCoreApp.class.getResourceAsStream("/com/culinarycore/gui/cutlery.png")));
         com.culinarycore.gui.ClsSceneManager sceneManager = com.culinarycore.gui.ClsSceneManager.getInstance();
         sceneManager.setPrimaryStage(primaryStage);
         sceneManager.switchTo("/com/culinarycore/gui/Main.fxml");
