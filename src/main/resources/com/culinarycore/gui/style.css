@@ -43,11 +43,21 @@
 }
 
 /* Headers */
+.header-box {
+    -fx-alignment: center-left;
+    -fx-spacing: 10px;
+    -fx-padding: 0 0 20 0;
+}
+
+.header-icon {
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.2) , 4, 0.0, 0, 1 );
+    -fx-background-radius: 6;
+}
+
 .header-label {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #0550AE;
-    -fx-padding: 0 0 20 0;
 }
 
 .subtitle-label {
