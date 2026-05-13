@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextField;
 
 public class StudentController extends BaseController {
@@ -20,9 +22,26 @@ public class StudentController extends BaseController {
     @FXML private Button btnDelete;
     @FXML private Button btnClear;
 
+    private int currentSelectedId = -1;
+
     @Override
     public void initialize() {
         cmbGender.getItems().addAll("M", "F");
+        
+        TableColumn<ClsStudent, String> colFirstName = new TableColumn<>("First Name");
+        colFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        
+        TableColumn<ClsStudent, String> colLastName = new TableColumn<>("Last Name");
+        colLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        
+        TableColumn<ClsStudent, Character> colGender = new TableColumn<>("Gender");
+        colGender.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        
+        TableColumn<ClsStudent, String> colPhone = new TableColumn<>("Phone");
+        colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        
+        tableView.getColumns().setAll(colFirstName, colLastName, colGender, colPhone);
+
         loadData();
     }
 
@@ -34,7 +53,7 @@ public class StudentController extends BaseController {
 
     @Override
     public void clearForm() {
-
+        currentSelectedId = -1;
         txtFirstName.clear();
         txtLastName.clear();
         cmbGender.getSelectionModel().clearSelection();
@@ -43,30 +62,80 @@ public class StudentController extends BaseController {
 
     @FXML
     public void onAdd_Click() {
-        showAlert("Added successfully!", false);
-        loadData();
-        clearForm();
+        if (txtFirstName.getText().trim().isEmpty() || txtLastName.getText().trim().isEmpty() || cmbGender.getValue() == null) {
+            showAlert("Please fill in required fields (First Name, Last Name, Gender).", true);
+            return;
+        }
+        
+        ClsStudent newStudent = new ClsStudent(
+            txtPhone.getText().trim(),
+            cmbGender.getValue().charAt(0),
+            txtLastName.getText().trim(),
+            txtFirstName.getText().trim()
+        );
+        boolean success = studentService.addStudent(newStudent);
+        
+        if (success) {
+            showAlert("Student added successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to add student.", true);
+        }
     }
 
     @FXML
     public void onUpdate_Click() {
-        showAlert("Updated successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a student to update.", true);
+            return;
+        }
+        if (txtFirstName.getText().trim().isEmpty() || txtLastName.getText().trim().isEmpty() || cmbGender.getValue() == null) {
+            showAlert("Please fill in required fields (First Name, Last Name, Gender).", true);
+            return;
+        }
+
+        ClsStudent updatedStudent = new ClsStudent(
+            txtPhone.getText().trim(),
+            cmbGender.getValue().charAt(0),
+            txtLastName.getText().trim(),
+            txtFirstName.getText().trim()
+        );
+        updatedStudent.setID(currentSelectedId);
+        boolean success = studentService.updateStudent(updatedStudent);
+        
+        if (success) {
+            showAlert("Student updated successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to update student.", true);
+        }
     }
 
     @FXML
     public void onDelete_Click() {
-        showAlert("Deleted successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a student to delete.", true);
+            return;
+        }
+        
+        boolean success = studentService.deleteStudent(currentSelectedId);
+        
+        if (success) {
+            showAlert("Student deleted successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to delete student. They may be enrolled in workshops.", true);
+        }
     }
 
     @FXML
     public void onRowSelect() {
         ClsStudent selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-
+            currentSelectedId = selected.getID();
             txtFirstName.setText(selected.getFirstName());
             txtLastName.setText(selected.getLastName());
             txtPhone.setText(selected.getPhone());

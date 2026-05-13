@@ -55,4 +55,8 @@ public class ClsChef {
         this._expertise = _expertise;
     }
 
+    @Override
+    public String toString() {
+        return _firstName + " " + _lastName;
+    }
 }

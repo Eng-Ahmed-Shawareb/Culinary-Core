@@ -4,6 +4,8 @@ import com.culinarycore.model.ClsKitchen;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextField;
 
 public class KitchenController extends BaseController {
@@ -17,8 +19,18 @@ public class KitchenController extends BaseController {
     @FXML private Button btnDelete;
     @FXML private Button btnClear;
 
+    private int currentSelectedId = -1;
+
     @Override
     public void initialize() {
+        TableColumn<ClsKitchen, String> colName = new TableColumn<>("Name");
+        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        
+        TableColumn<ClsKitchen, String> colType = new TableColumn<>("Type");
+        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
+        
+        tableView.getColumns().setAll(colName, colType);
+        
         loadData();
     }
 
@@ -30,40 +42,77 @@ public class KitchenController extends BaseController {
 
     @Override
     public void clearForm() {
-
+        currentSelectedId = -1;
         txtName.clear();
         txtType.clear();
     }
 
     @FXML
     public void onAdd_Click() {
-        // Implement add logic using kitchenService
-        showAlert("Added successfully!", false);
-        loadData();
-        clearForm();
+        if (txtName.getText().trim().isEmpty() || txtType.getText().trim().isEmpty()) {
+            showAlert("Please fill in all fields.", true);
+            return;
+        }
+        
+        ClsKitchen newKitchen = new ClsKitchen(txtName.getText().trim(), txtType.getText().trim());
+        boolean success = kitchenService.addKitchen(newKitchen);
+        
+        if (success) {
+            showAlert("Kitchen added successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to add kitchen.", true);
+        }
     }
 
     @FXML
     public void onUpdate_Click() {
-        // Implement update logic using kitchenService
-        showAlert("Updated successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a kitchen to update.", true);
+            return;
+        }
+        if (txtName.getText().trim().isEmpty() || txtType.getText().trim().isEmpty()) {
+            showAlert("Please fill in all fields.", true);
+            return;
+        }
+
+        ClsKitchen updatedKitchen = new ClsKitchen(txtName.getText().trim(), txtType.getText().trim());
+        updatedKitchen.setID(currentSelectedId);
+        boolean success = kitchenService.updateKitchen(updatedKitchen);
+        
+        if (success) {
+            showAlert("Kitchen updated successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to update kitchen.", true);
+        }
     }
 
     @FXML
     public void onDelete_Click() {
-        // Implement delete logic using kitchenService
-        showAlert("Deleted successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a kitchen to delete.", true);
+            return;
+        }
+        
+        boolean success = kitchenService.deleteKitchen(currentSelectedId);
+        
+        if (success) {
+            showAlert("Kitchen deleted successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to delete kitchen. It may be in use.", true);
+        }
     }
 
     @FXML
     public void onRowSelect() {
         ClsKitchen selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-
+            currentSelectedId = selected.getID();
             txtName.setText(selected.getName());
             txtType.setText(selected.getType());
         }

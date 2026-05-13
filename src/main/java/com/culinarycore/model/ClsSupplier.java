@@ -9,6 +9,10 @@ public class ClsSupplier {
         this._name = _name;
     }
 
+    public ClsSupplier(String _name) {
+        this._name = _name;
+    }
+
     public int getID() {
         return _ID;
     }

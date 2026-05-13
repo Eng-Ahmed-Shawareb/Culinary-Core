@@ -8,8 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextField;
-import java.time.LocalDate;
 
 public class WorkshopController extends BaseController {
 
@@ -27,9 +28,35 @@ public class WorkshopController extends BaseController {
     @FXML private Button btnDelete;
     @FXML private Button btnClear;
 
+    private int currentSelectedId = -1;
+
     @Override
     public void initialize() {
         cmbState.getItems().addAll("Scheduled", "Active", "Completed", "Cancelled");
+
+        TableColumn<ClsWorkshop, String> colTitle = new TableColumn<>("Title");
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        TableColumn<ClsWorkshop, Double> colPrice = new TableColumn<>("Price");
+        colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+        TableColumn<ClsWorkshop, java.time.LocalDate> colStart = new TableColumn<>("Start Date");
+        colStart.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+
+        TableColumn<ClsWorkshop, java.time.LocalDate> colEnd = new TableColumn<>("End Date");
+        colEnd.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        
+        TableColumn<ClsWorkshop, Integer> colKitchen = new TableColumn<>("Kitchen ID");
+        colKitchen.setCellValueFactory(new PropertyValueFactory<>("kitchenID"));
+        
+        TableColumn<ClsWorkshop, Integer> colChef = new TableColumn<>("Chef ID");
+        colChef.setCellValueFactory(new PropertyValueFactory<>("chefID"));
+
+        TableColumn<ClsWorkshop, String> colStatus = new TableColumn<>("Status");
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        tableView.getColumns().setAll(colTitle, colKitchen, colChef, colStart, colEnd, colPrice, colStatus);
+
         loadData();
     }
 
@@ -45,7 +72,7 @@ public class WorkshopController extends BaseController {
 
     @Override
     public void clearForm() {
-
+        currentSelectedId = -1;
         txtTitle.clear();
         txtPrice.clear();
         cmbKitchen.getSelectionModel().clearSelection();
@@ -57,35 +84,123 @@ public class WorkshopController extends BaseController {
 
     @FXML
     public void onAdd_Click() {
-        showAlert("Added successfully!", false);
-        loadData();
-        clearForm();
+        if (txtTitle.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || 
+            cmbKitchen.getValue() == null || cmbChef.getValue() == null || 
+            dtpStart.getValue() == null || dtpEnd.getValue() == null || 
+            cmbState.getValue() == null) {
+            showAlert("Please fill in all fields.", true);
+            return;
+        }
+
+        try {
+            double price = Double.parseDouble(txtPrice.getText().trim());
+            ClsWorkshop newWorkshop = new ClsWorkshop(
+                -1,
+                cmbKitchen.getValue().getID(),
+                cmbChef.getValue().getID(),
+                txtTitle.getText().trim(),
+                dtpStart.getValue(),
+                dtpEnd.getValue(),
+                price,
+                com.culinarycore.model.StatusEnums.EnWorkshopStatus.valueOf(cmbState.getValue()),
+                "N/A"
+            );
+            
+            boolean success = workshopService.addWorkshop(newWorkshop);
+            if (success) {
+                showAlert("Workshop added successfully!", false);
+                loadData();
+                clearForm();
+            } else {
+                showAlert("Failed to add workshop.", true);
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Price must be a valid number.", true);
+        }
     }
 
     @FXML
     public void onUpdate_Click() {
-        showAlert("Updated successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a workshop to update.", true);
+            return;
+        }
+        if (txtTitle.getText().trim().isEmpty() || txtPrice.getText().trim().isEmpty() || 
+            cmbKitchen.getValue() == null || cmbChef.getValue() == null || 
+            dtpStart.getValue() == null || dtpEnd.getValue() == null || 
+            cmbState.getValue() == null) {
+            showAlert("Please fill in all fields.", true);
+            return;
+        }
+
+        try {
+            double price = Double.parseDouble(txtPrice.getText().trim());
+            ClsWorkshop updatedWorkshop = new ClsWorkshop(
+                currentSelectedId,
+                cmbKitchen.getValue().getID(),
+                cmbChef.getValue().getID(),
+                txtTitle.getText().trim(),
+                dtpStart.getValue(),
+                dtpEnd.getValue(),
+                price,
+                com.culinarycore.model.StatusEnums.EnWorkshopStatus.valueOf(cmbState.getValue()),
+                "N/A"
+            );
+            
+            boolean success = workshopService.updateWorkshop(updatedWorkshop);
+            if (success) {
+                showAlert("Workshop updated successfully!", false);
+                loadData();
+                clearForm();
+            } else {
+                showAlert("Failed to update workshop.", true);
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Price must be a valid number.", true);
+        }
     }
 
     @FXML
     public void onDelete_Click() {
-        showAlert("Deleted successfully!", false);
-        loadData();
-        clearForm();
+        if (currentSelectedId == -1) {
+            showAlert("Please select a workshop to delete.", true);
+            return;
+        }
+        
+        boolean success = workshopService.deleteWorkshop(currentSelectedId);
+        
+        if (success) {
+            showAlert("Workshop deleted successfully!", false);
+            loadData();
+            clearForm();
+        } else {
+            showAlert("Failed to delete workshop.", true);
+        }
     }
 
     @FXML
     public void onRowSelect() {
         ClsWorkshop selected = tableView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-
+            currentSelectedId = selected.getID();
             txtTitle.setText(selected.getTitle());
             txtPrice.setText(String.valueOf(selected.getPrice()));
             dtpStart.setValue(selected.getStartDate());
             dtpEnd.setValue(selected.getEndDate());
-            // Need matching state, kitchen, and chef selection logic
+            cmbState.setValue(selected.getStatus().name());
+            
+            for (ClsKitchen k : cmbKitchen.getItems()) {
+                if (k.getID() == selected.getKitchenID()) {
+                    cmbKitchen.setValue(k);
+                    break;
+                }
+            }
+            for (ClsChef c : cmbChef.getItems()) {
+                if (c.getID() == selected.getChefID()) {
+                    cmbChef.setValue(c);
+                    break;
+                }
+            }
         }
     }
 }

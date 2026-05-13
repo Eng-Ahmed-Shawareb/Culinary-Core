@@ -33,4 +33,9 @@ public class ClsKitchen {
         this._name = _name;
         this._type = _type;
     }
+
+    @Override
+    public String toString() {
+        return _name;
+    }
 }

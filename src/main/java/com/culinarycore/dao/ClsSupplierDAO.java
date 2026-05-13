@@ -56,11 +56,10 @@ public class ClsSupplierDAO implements IRepository<ClsSupplier> {
 
     @Override
     public boolean save(ClsSupplier entity) {
-        String query = "INSERT INTO Supplier ( ID , name ) VALUES( ? , ? )";
+        String query = "INSERT INTO Supplier ( name ) VALUES( ? )";
         Connection connection= _databaseConnection.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1,entity.getID());
-            statement.setString(2,entity.getName());
+            statement.setString(1,entity.getName());
             return statement.executeUpdate()>0;
         } catch (SQLException es) {
             System.out.println("Exception save: " + es.getMessage());
@@ -73,8 +72,8 @@ public class ClsSupplierDAO implements IRepository<ClsSupplier> {
         String Query ="UPDATE Supplier SET name= ? WHERE ID = ?";
         Connection connection= _databaseConnection.getConnection();
         try (PreparedStatement statement=connection.prepareStatement(Query)){
-            statement.setString(2,entity.getName());
-            statement.setInt(1,entity.getID());
+            statement.setString(1,entity.getName());
+            statement.setInt(2,entity.getID());
             return statement.executeUpdate()>0;
         } catch (SQLException es) {
             System.out.println("Exception Update: " + es.getMessage());
