@@ -5,7 +5,7 @@ public class ClsKitchen {
     private String _name;
     private String _type;
 
-    public String get_type() {
+    public String getType() {
         return _type;
     }
 

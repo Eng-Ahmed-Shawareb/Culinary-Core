@@ -64,7 +64,7 @@ catch (SQLException es){
         String query="INSERT INTO kitchen (name,type) values(?,?)";
         try(PreparedStatement statement=connection.prepareStatement(query);){
             statement.setString(1,entity.getName());
-            statement.setString(2,entity.get_type());
+            statement.setString(2,entity.getType());
          return statement.executeUpdate()>0;
         }
         catch (SQLException es){
@@ -79,7 +79,7 @@ catch (SQLException es){
         String query="UPDATE kitchen SET name=?,type=? WHERE ID=?";
         try(PreparedStatement statement=connection.prepareStatement(query);){
             statement.setString(1,entity.getName());
-            statement.setString(2,entity.get_type());
+            statement.setString(2,entity.getType());
             statement.setInt(3,entity.getID());
             return statement.executeUpdate()>0;
         }
@@ -102,5 +102,35 @@ catch (SQLException es){
         }
 
         return false;
+    }
+    public List<ClsKitchen> getUnusedLastMonth(){
+        String query="SELECT \n" +
+                "    kitchen.ID, \n" +
+                "   kitchen.name, \n" +
+                "    kitchen.type,\n" +
+                "    Workshop.ID\n" +
+                "FROM kitchen\n" +
+                "LEFT JOIN Workshop \n" +
+                "    ON kitchen.ID = Workshop.FK_KitchenID \n" +
+                "    AND Workshop.[start date] BETWEEN DATEADD(month, -1, GETDATE()) AND GETDATE()\n" +
+                "WHERE Workshop.ID IS NULL";
+        Connection connection= _databaseConnection.getConnection();
+        try(PreparedStatement statement=connection.prepareStatement(query);){
+
+            ResultSet resultSet= statement.executeQuery();
+            List<ClsKitchen>kitchens=new ArrayList<>();
+            while(resultSet.next()) {
+                ClsKitchen kitchen = new ClsKitchen(resultSet.getString("name"),
+                        resultSet.getString("type"));
+                kitchen.setID(resultSet.getInt("ID"));
+                kitchens.add(kitchen);
+            }
+            return kitchens;
+        }
+        catch (SQLException es){
+            System.err.println("Exception: "+es.getMessage());
+        }
+        return List.of();
+
     }
 }

@@ -65,7 +65,7 @@ public class KitchenController extends BaseController {
         if (selected != null) {
             txtID.setText(String.valueOf(selected.getID()));
             txtName.setText(selected.getName());
-            txtType.setText(selected.get_type());
+            txtType.setText(selected.getType());
         }
     }
 }

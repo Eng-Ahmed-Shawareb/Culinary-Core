@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class ClsChefDAO implements IRepository<ClsChef> {
  private    ClsDatabaseConnection _databaseConnection;
-    ClsChefDAO(){
+   public ClsChefDAO(){
         _databaseConnection=ClsDatabaseConnection.getInstance();
     }
     @Override
@@ -112,5 +112,38 @@ return chefs;
             System.err.println("Exception: "+es.getMessage());
         }
         return false;
+    }
+    public List<ClsChef>getInactiveLastMonth(){
+        Connection connection=_databaseConnection.getConnection();
+        String query="SELECT \n" +
+                "    chef.ID, \n" +
+                "    chef.[first name], \n" +
+                "    chef.[last name], \n" +
+                "chef.expertise,\n"+
+                "chef.bio,\n"+
+                "    Workshop.title,\n" +
+                "    Workshop.ID\n" +
+                "FROM chef\n" +
+                "LEFT JOIN Workshop \n" +
+                "    ON chef.ID = Workshop.FK_ChefID \n" +
+                "    AND Workshop.[start date] BETWEEN DATEADD(month, -1, GETDATE()) AND GETDATE()\n" +
+                "WHERE Workshop.ID IS NULL;";
+        try(PreparedStatement statement=connection.prepareStatement(query);){
+            List<ClsChef>chefs=new ArrayList<>();
+            ResultSet resultSet= statement.executeQuery();
+            while(resultSet.next()) {
+                ClsChef chef = new ClsChef(resultSet.getString("bio"),
+                        resultSet.getString("first name"),
+                        resultSet.getString("last name"),
+                        resultSet.getString("expertise"));
+                chef.setID(resultSet.getInt("ID"));
+                chefs.add(chef);
+            }
+            return chefs;
+        }
+        catch(SQLException es){
+            System.err.println("Exception: "+es.getMessage());
+        }
+        return List.of();
     }
 }
