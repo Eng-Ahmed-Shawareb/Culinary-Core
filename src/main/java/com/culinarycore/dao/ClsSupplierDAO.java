@@ -3,6 +3,7 @@ package com.culinarycore.dao;
 import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.dao.singleton.ClsDatabaseConnection;
 import com.culinarycore.model.ClsSupplier;
+import com.culinarycore.model.dto.ClsSupplierTopDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -95,26 +96,33 @@ public class ClsSupplierDAO implements IRepository<ClsSupplier> {
         }
         return false;
     }
-    public Optional<ClsSupplier> findTopByQuantityLastMonth() {
-        String query = "SELECT TOP 1 S.ID, S.name " +
-                "FROM Supplier S " +
-                "JOIN Ingredient_batch B ON S.ID = B.FK_SupplierID " +
-                "WHERE B.[delivery date] >= DATEADD(month, -1, GETDATE()) " +
-                "GROUP BY S.ID, S.name " +
-                "ORDER BY SUM(B.units) DESC";
+    public Optional<ClsSupplierTopDTO> findTopByQuantityLastMonth() {
+        String query =
+                "SELECT TOP 1 " +
+                        "    s.ID, " +
+                        "    s.name, " +
+                        "    SUM(cn.qantity) AS total_quantity_supplied " +
+                        "FROM Consume              cn " +
+                        "JOIN Ingredient_batch     ib ON cn.FK_BatchID     = ib.ID " +
+                        "JOIN Supplier              s ON ib.FK_SupplierID  = s.ID " +
+                        "WHERE " +
+                        "    MONTH(cn.[consuming date]) = MONTH(DATEADD(MONTH, -1, GETDATE())) " +
+                        "    AND YEAR(cn.[consuming date])  = YEAR(DATEADD(MONTH, -1, GETDATE())) " +
+                        "GROUP BY s.ID, s.name " +
+                        "ORDER BY total_quantity_supplied DESC";
 
         Connection connection = _databaseConnection.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
-
             if (resultSet.next()) {
-                return Optional.of(new ClsSupplier(
+                return Optional.of(new ClsSupplierTopDTO(
                         resultSet.getInt("ID"),
-                        resultSet.getString("name")
+                        resultSet.getString("name"),
+                        resultSet.getInt("total_quantity_supplied")
                 ));
             }
         } catch (SQLException e) {
-            System.out.println("Exception findTop: " + e.getMessage());
+            System.out.println("Exception findTopByQuantityLastMonth: " + e.getMessage());
         }
         return Optional.empty();
     }

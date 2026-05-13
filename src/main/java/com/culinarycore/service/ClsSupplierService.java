@@ -1,10 +1,12 @@
 package com.culinarycore.service;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.culinarycore.dao.ClsSupplierDAO;
 import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.model.ClsSupplier;
+import com.culinarycore.model.dto.ClsSupplierTopDTO;
 
 public class ClsSupplierService {
     private IRepository<ClsSupplier> _supplierDAO;
@@ -25,14 +27,14 @@ public class ClsSupplierService {
     public boolean deleteSupplier(int id) {
         return _supplierDAO.delete(id);
     }
-    public Object getTopLastMonth() {
-        ClsSupplierDAO supplierDAO;
-
-        if (_supplierDAO instanceof ClsSupplierDAO) {
-            supplierDAO = (ClsSupplierDAO) _supplierDAO;
-        } else {
-            supplierDAO = new ClsSupplierDAO();
-        }
-        return supplierDAO.findTopByQuantityLastMonth();
+    public Optional<ClsSupplierTopDTO> getTopSupplierLastMonth() {
+      ClsSupplierDAO supplierDAO;
+      if(_supplierDAO instanceof  ClsSupplierDAO) {
+      supplierDAO=(ClsSupplierDAO) _supplierDAO;
+      }
+      else {
+          supplierDAO=new ClsSupplierDAO();
+      }
+      return supplierDAO.findTopByQuantityLastMonth();
     }
 }
