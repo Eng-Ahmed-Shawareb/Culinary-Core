@@ -4,6 +4,7 @@ import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.dao.singleton.ClsDatabaseConnection;
 import com.culinarycore.model.ClsIngredientBatch;
 import com.culinarycore.model.StatusEnums.EnIngredientBatch;
+import com.culinarycore.model.dto.ClsKitchenBatchReportDTO;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -156,35 +157,31 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
         return batches;
     }
 
-    public List<ClsIngredientBatch> findByKitchenLastMonth(int kID) {
-        String query = "SELECT DISTINCT B.* FROM Ingredient_batch B " +
-                "JOIN Consume C ON B.ID = C.FK_BatchID " +
-                "JOIN Workshop W ON C.FK_WorkshopID = W.ID " +
-                "WHERE W.FK_KitchenID = ? " +
-                "AND C.[consuming date] >= DATEADD(month, DATEDIFF(month, 0, GETDATE()) - 1, 0) " +
-                "AND C.[consuming date] < DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0)";
+    public List<ClsKitchenBatchReportDTO> getKitchenConsumptionReportDTO() {
+        String query = "SELECT K.name, B.name, SUM(C.qantity) " +
+                "FROM Kitchen K " +
+                "JOIN Workshop W ON K.ID = W.FK_KitchenID " +
+                "JOIN Consume C ON W.ID = C.FK_WorkshopID " +
+                "JOIN Ingredient_batch B ON C.FK_BatchID = B.ID " +
+                "WHERE C.[consuming date] >= DATEADD(month, -1, GETDATE()) " +
+                "GROUP BY K.name, B.name";
 
-        List<ClsIngredientBatch> batches = new ArrayList<>();
+        List<ClsKitchenBatchReportDTO> report = new ArrayList<>();
         Connection connection = _databaseConnection.getConnection();
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, kID);
-            ResultSet resultSet = statement.executeQuery();
+        try (
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                batches.add(new ClsIngredientBatch(
-                        resultSet.getInt("ID"),
-                        resultSet.getInt("FK_SupplierID"),
-                        resultSet.getInt("units"),
-                        resultSet.getString("name"),
-                        resultSet.getDate("expiration date").toLocalDate(),
-                        resultSet.getDate("delivery date").toLocalDate(),
-                        EnIngredientBatch.valueOf(resultSet.getString("state").toUpperCase())
+                report.add(new ClsKitchenBatchReportDTO(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getInt(3)
                 ));
             }
         } catch (SQLException e) {
-            System.out.println("Exception findByKitchenLastMonth: " + e.getMessage());
+            System.out.println("DTO Report Error: " + e.getMessage());
         }
-        return batches;
+        return report;
     }
 }

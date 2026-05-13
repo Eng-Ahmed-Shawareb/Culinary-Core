@@ -1,9 +1,11 @@
 package com.culinarycore.service;
+import java.util.Collections;
 import java.util.List;
 
 import com.culinarycore.dao.ClsIngredientBatchDAO;
 import com.culinarycore.dao.interfaces.IRepository;
 import com.culinarycore.model.ClsIngredientBatch;
+import com.culinarycore.model.dto.ClsKitchenBatchReportDTO;
 
 public class ClsIngredientBatchService {
     private IRepository<ClsIngredientBatch> _iIngredientBatchDAO;
@@ -27,13 +29,10 @@ public class ClsIngredientBatchService {
         return _iIngredientBatchDAO.delete(id);
     }
 
-    public List<ClsIngredientBatch> getByKitchenLastMonth(int kID) {
-        ClsIngredientBatchDAO ingredientBatchDAO;
-        if(_iIngredientBatchDAO instanceof ClsIngredientBatchDAO){
-            ingredientBatchDAO =(ClsIngredientBatchDAO) _iIngredientBatchDAO;
-        } else {
-            ingredientBatchDAO =new  ClsIngredientBatchDAO();
+    public List<ClsKitchenBatchReportDTO> getDashboardReport() {
+        if (_iIngredientBatchDAO instanceof ClsIngredientBatchDAO) {
+            return ((ClsIngredientBatchDAO) _iIngredientBatchDAO).getKitchenConsumptionReportDTO();
         }
-        return ingredientBatchDAO.findByKitchenLastMonth(kID);
+        return Collections.emptyList();
     }
 }
