@@ -97,6 +97,7 @@ public class ClsSupplierDAO implements IRepository<ClsSupplier> {
         return false;
     }
     public Optional<ClsSupplierTopDTO> findTopByQuantityLastMonth() {
+
         String query =
                 "SELECT TOP 1 " +
                         "    s.ID, " +
@@ -105,9 +106,7 @@ public class ClsSupplierDAO implements IRepository<ClsSupplier> {
                         "FROM Consume              cn " +
                         "JOIN Ingredient_batch     ib ON cn.FK_BatchID     = ib.ID " +
                         "JOIN Supplier              s ON ib.FK_SupplierID  = s.ID " +
-                        "WHERE " +
-                        "    MONTH(cn.[consuming date]) = MONTH(DATEADD(MONTH, -1, GETDATE())) " +
-                        "    AND YEAR(cn.[consuming date])  = YEAR(DATEADD(MONTH, -1, GETDATE())) " +
+                        "WHERE cn.[consuming date] >= DATEADD(month, -1, GETDATE()) " +
                         "GROUP BY s.ID, s.name " +
                         "ORDER BY total_quantity_supplied DESC";
 
