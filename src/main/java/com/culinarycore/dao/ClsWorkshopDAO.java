@@ -35,7 +35,7 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
                             resultSet.getObject("start date" , LocalDate.class) ,
                             resultSet.getObject("end date" , LocalDate.class) ,
                             resultSet.getDouble("price") ,
-                            parseWorkshopStatus(resultSet.getString("state")) ,
+                            EnWorkshopStatus.valueOf(resultSet.getString("state")) ,
                             resultSet.getString("technique")));
                 }
             }
@@ -59,7 +59,7 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
                             resultSet.getObject("start date" , LocalDate.class) ,
                             resultSet.getObject("end date" , LocalDate.class) ,
                             resultSet.getDouble("price") ,
-                            parseWorkshopStatus(resultSet.getString("state")) ,
+                            EnWorkshopStatus.valueOf(resultSet.getString("state")) ,
                             resultSet.getString("technique")));
                     resultList.add(workshop);
                 }
@@ -124,16 +124,4 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
         return false;
     }
 
-    private EnWorkshopStatus parseWorkshopStatus(String statusValue) {
-        if (statusValue == null) {
-            return EnWorkshopStatus.SCHEDULED;
-        }
-
-        try {
-            return EnWorkshopStatus.valueOf(statusValue.trim().toUpperCase());
-        } catch (IllegalArgumentException exception) {
-            System.out.println("Unknown workshop state: " + statusValue + ". Fallback to SCHEDULED.");
-            return EnWorkshopStatus.SCHEDULED;
-        }
-    }
 }
