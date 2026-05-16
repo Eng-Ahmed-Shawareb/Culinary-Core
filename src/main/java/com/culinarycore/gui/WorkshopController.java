@@ -75,7 +75,19 @@ public class WorkshopController extends BaseController {
         colTechnique.setCellValueFactory(new PropertyValueFactory<>("technique"));
 
         tableView.getColumns().setAll(colID, colTitle, colKitchen, colChef, colStart, colEnd, colPrice, colStatus, colTechnique);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 9;
+        colID.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colTitle.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colKitchen.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colChef.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colStart.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colEnd.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colPrice.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colStatus.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colTechnique.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }

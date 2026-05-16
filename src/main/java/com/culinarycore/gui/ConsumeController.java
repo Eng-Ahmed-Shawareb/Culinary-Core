@@ -12,6 +12,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextField;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ConsumeController extends BaseController {
 
     @FXML private TableView<ClsConsume> tableView;
@@ -26,25 +30,25 @@ public class ConsumeController extends BaseController {
 
     private int currentSelectedBatchId = -1;
     private int currentSelectedWorkshopId = -1;
+    private final Map<Integer, String> batchNamesById = new HashMap<>();
+    private final Map<Integer, String> workshopTitlesById = new HashMap<>();
 
     @Override
     public void initialize() {
         TableColumn<ClsConsume, String> colBatch = new TableColumn<>("Batch");
         colBatch.setCellValueFactory(cellData -> {
             int bId = cellData.getValue().getBatchID();
-            for (com.culinarycore.model.ClsIngredientBatch b : batchService.getAll()) {
-                if (b.getID() == bId) return new javafx.beans.property.SimpleStringProperty(b.getName());
-            }
-            return new javafx.beans.property.SimpleStringProperty(String.valueOf(bId));
+            return new javafx.beans.property.SimpleStringProperty(
+                batchNamesById.getOrDefault(bId, String.valueOf(bId))
+            );
         });
 
         TableColumn<ClsConsume, String> colWorkshop = new TableColumn<>("Workshop");
         colWorkshop.setCellValueFactory(cellData -> {
             int wId = cellData.getValue().getWorkshopID();
-            for (ClsWorkshop w : cmbWorkshop.getItems()) {
-                if (w.getID() == wId) return new javafx.beans.property.SimpleStringProperty(w.getTitle());
-            }
-            return new javafx.beans.property.SimpleStringProperty(String.valueOf(wId));
+            return new javafx.beans.property.SimpleStringProperty(
+                workshopTitlesById.getOrDefault(wId, String.valueOf(wId))
+            );
         });
 
         TableColumn<ClsConsume, Integer> colQuantity = new TableColumn<>("Quantity");
@@ -54,23 +58,45 @@ public class ConsumeController extends BaseController {
         colDate.setCellValueFactory(new PropertyValueFactory<>("consumeDate"));
 
         tableView.getColumns().setAll(colBatch, colWorkshop, colQuantity, colDate);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 4;
+        colBatch.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colWorkshop.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colQuantity.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colDate.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }
 
     @Override
     public void loadData() {
+        List<ClsIngredientBatch> allBatches = batchService.getAll();
+        List<ClsWorkshop> allWorkshops = workshopService.getAll();
+
+        batchNamesById.clear();
+        for (ClsIngredientBatch batch : allBatches) {
+            batchNamesById.put(batch.getID(), batch.getName());
+        }
+
+        workshopTitlesById.clear();
+        for (ClsWorkshop workshop : allWorkshops) {
+            workshopTitlesById.put(workshop.getID(), workshop.getTitle());
+        }
+
         tableView.getItems().clear();
         tableView.getItems().addAll(consumeService.getAll());
+
         cmbBatch.getItems().clear();
-        for (ClsIngredientBatch b : batchService.getAll()) {
+        for (ClsIngredientBatch b : allBatches) {
             if (b.getState() != com.culinarycore.model.StatusEnums.EnIngredientBatch.CONSUMED) {
                 cmbBatch.getItems().add(b);
             }
         }
+
         cmbWorkshop.getItems().clear();
-        cmbWorkshop.getItems().addAll(workshopService.getAll());
+        cmbWorkshop.getItems().addAll(allWorkshops);
     }
 
     @Override

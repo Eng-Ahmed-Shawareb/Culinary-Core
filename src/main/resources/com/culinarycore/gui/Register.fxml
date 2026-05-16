@@ -40,6 +40,6 @@
             </children>
         </HBox>
         
-        <TableView fx:id="tableView" onMouseClicked="#onRowSelect" prefHeight="300.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+        <TableView fx:id="tableView" onMouseClicked="#onRowSelect" prefHeight="300.0" maxWidth="Infinity" VBox.vgrow="ALWAYS" />
     </children>
 </VBox>

@@ -12,7 +12,7 @@ public class ClsCulinaryCoreApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Culinary Studio & Gourmet Ingredient Network");
+        primaryStage.setTitle("Culinary School System");
         primaryStage.getIcons()
                 .add(new Image(ClsCulinaryCoreApp.class.getResourceAsStream("/com/culinarycore/gui/cutlery.png")));
         com.culinarycore.gui.ClsSceneManager sceneManager = com.culinarycore.gui.ClsSceneManager.getInstance();

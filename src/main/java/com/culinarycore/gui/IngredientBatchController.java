@@ -60,7 +60,17 @@ public class IngredientBatchController extends BaseController {
         colState.setCellValueFactory(new PropertyValueFactory<>("state"));
 
         tableView.getColumns().setAll(colID, colName, colUnits, colSupplier, colDelivery, colExpiry, colState);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 7;
+        colID.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colName.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colUnits.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colSupplier.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colDelivery.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colExpiry.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colState.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }

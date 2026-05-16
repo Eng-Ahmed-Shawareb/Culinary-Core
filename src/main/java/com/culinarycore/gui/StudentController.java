@@ -53,7 +53,15 @@ public class StudentController extends BaseController {
         colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
         tableView.getColumns().setAll(colID, colFirstName, colLastName, colGender, colPhone);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 5;
+        colID.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colFirstName.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colLastName.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colGender.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colPhone.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }

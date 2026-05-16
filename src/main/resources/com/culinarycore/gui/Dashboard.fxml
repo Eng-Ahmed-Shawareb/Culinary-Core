@@ -21,13 +21,12 @@
             </children>
         </HBox>
         
-        <Label fx:id="lblTitle" styleClass="chart-title" text="Results" />
+        <Label fx:id="lblTitle" text="Results" />
         <Label fx:id="lblSubtitle" styleClass="subtitle-label" text="" />
         
         <HBox VBox.vgrow="ALWAYS" spacing="20.0">
             <children>
-                <TableView fx:id="tableView" prefWidth="400.0" HBox.hgrow="ALWAYS" />
-                <StackPane fx:id="chartPane" prefWidth="350.0" HBox.hgrow="ALWAYS" />
+                <TableView fx:id="tableView" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
             </children>
         </HBox>
     </children>

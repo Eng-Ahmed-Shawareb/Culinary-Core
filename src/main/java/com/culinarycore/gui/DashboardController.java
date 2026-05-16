@@ -3,17 +3,11 @@ package com.culinarycore.gui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.StackPane;
 import javafx.beans.property.SimpleStringProperty;
 import java.util.List;
 
@@ -29,11 +23,6 @@ public class DashboardController extends BaseController {
     private Label lblTitle;
     @FXML
     private Label lblSubtitle;
-    @FXML
-    private StackPane chartPane;
-
-    private BarChart<String, Number> barChart;
-    private PieChart pieChart;
 
     @Override
     public void initialize() {
@@ -45,14 +34,6 @@ public class DashboardController extends BaseController {
                 "5. Batches per kitchen last month",
                 "6. Student contact & workshop count");
 
-        // Setup empty charts
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        barChart = new BarChart<>(xAxis, yAxis);
-        barChart.setAnimated(false);
-
-        pieChart = new PieChart();
-        pieChart.setAnimated(false);
     }
 
     @Override
@@ -63,7 +44,6 @@ public class DashboardController extends BaseController {
     public void clearForm() {
         tableView.getColumns().clear();
         tableView.getItems().clear();
-        chartPane.getChildren().clear();
     }
 
     @FXML
@@ -93,7 +73,6 @@ public class DashboardController extends BaseController {
         buildTableColumns(List.of("Expertise", "Enrollments"));
         
         java.util.Optional<com.culinarycore.model.dto.ClsExpertiseEnrollmentDTO> result = registerService.getTopExpertiseByEnrollments();
-        barChart.getData().clear();
         tableView.getItems().clear();
         
         if (result.isPresent()) {
@@ -103,14 +82,6 @@ public class DashboardController extends BaseController {
                 String.valueOf(dto.getEnrollmentCount())
             );
             tableView.getItems().add(row);
-            
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
-            series.setName("Enrollments");
-            series.getData().add(new XYChart.Data<>(dto.getExpertise(), dto.getEnrollmentCount()));
-            barChart.getData().add(series);
-            showChart("BarChart");
-        } else {
-            showChart("None");
         }
     }
 
@@ -127,13 +98,11 @@ public class DashboardController extends BaseController {
             );
             tableView.getItems().add(row);
         }
-        showChart("None");
     }
 
     public void runInquiry3_TopSupplier() {
         buildTableColumns(List.of("Supplier ID", "Name", "Total Quantity"));
         tableView.getItems().clear();
-        pieChart.getData().clear();
         
         java.util.Optional<com.culinarycore.model.dto.ClsSupplierTopDTO> opt = supplierService.getTopSupplierLastMonth();
         if (opt.isPresent()) {
@@ -144,12 +113,7 @@ public class DashboardController extends BaseController {
                 String.valueOf(dto.getTotalQuantitySupplied())
             );
             tableView.getItems().add(row);
-            
-            pieChart.getData().add(new PieChart.Data(dto.getName(), dto.getTotalQuantitySupplied()));
-            showChart("PieChart");
-            return;
         }
-        showChart("None");
     }
 
     public void runInquiry4_InactiveChefs() {
@@ -166,7 +130,6 @@ public class DashboardController extends BaseController {
             );
             tableView.getItems().add(row);
         }
-        showChart("None");
     }
 
     public void runInquiry5_BatchesByKitchen() {
@@ -182,7 +145,6 @@ public class DashboardController extends BaseController {
             );
             tableView.getItems().add(row);
         }
-        showChart("None");
     }
 
     public void runInquiry6_StudentWorkshops() {
@@ -199,12 +161,12 @@ public class DashboardController extends BaseController {
             );
             tableView.getItems().add(row);
         }
-        showChart("None");
     }
 
     private void buildTableColumns(List<String> headers) {
         tableView.getColumns().clear();
-        for (int i = 0; i < headers.size(); i++) {
+        int numColumns = headers.size();
+        for (int i = 0; i < numColumns; i++) {
             final int colIndex = i;
             TableColumn<ObservableList<String>, String> column = new TableColumn<>(headers.get(i));
             column.setCellValueFactory(param -> {
@@ -213,17 +175,10 @@ public class DashboardController extends BaseController {
                 }
                 return new SimpleStringProperty("");
             });
+            column.setPrefWidth(100);
+            column.prefWidthProperty().bind(tableView.widthProperty().divide(numColumns));
             tableView.getColumns().add(column);
         }
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    }
-
-    private void showChart(String type) {
-        chartPane.getChildren().clear();
-        if ("BarChart".equals(type)) {
-            chartPane.getChildren().add(barChart);
-        } else if ("PieChart".equals(type)) {
-            chartPane.getChildren().add(pieChart);
-        }
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
     }
 }

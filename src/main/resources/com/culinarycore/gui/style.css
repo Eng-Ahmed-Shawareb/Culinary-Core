@@ -55,9 +55,10 @@
 }
 
 .header-label {
-    -fx-font-size: 24px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-text-fill: #0550AE;
+    -fx-wrap-text: true;
 }
 
 .subtitle-label {
@@ -161,14 +162,4 @@
 .form-label {
     -fx-font-weight: bold;
     -fx-text-fill: #1F2328;
-}
-
-/* Charts */
-.chart-title {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #0550AE;
-}
-.chart-pie-label {
-    -fx-fill: #1F2328;
 }

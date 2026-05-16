@@ -35,7 +35,7 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
                             resultSet.getObject("start date" , LocalDate.class) ,
                             resultSet.getObject("end date" , LocalDate.class) ,
                             resultSet.getDouble("price") ,
-                            EnWorkshopStatus.valueOf(resultSet.getString("state")) ,
+                            parseWorkshopStatus(resultSet.getString("state")) ,
                             resultSet.getString("technique")));
                 }
             }
@@ -59,13 +59,13 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
                             resultSet.getObject("start date" , LocalDate.class) ,
                             resultSet.getObject("end date" , LocalDate.class) ,
                             resultSet.getDouble("price") ,
-                            EnWorkshopStatus.valueOf(resultSet.getString("state")) ,
+                            parseWorkshopStatus(resultSet.getString("state")) ,
                             resultSet.getString("technique")));
                     resultList.add(workshop);
                 }
             }
         } catch (SQLException es) {
-            System.out.println("Exception findByID: " + es.getMessage());
+            System.out.println("Exception findAll: " + es.getMessage());
         }
 
         return resultList;
@@ -122,5 +122,18 @@ public class ClsWorkshopDAO implements IRepository<ClsWorkshop> {
             System.out.println("Exception : " + es.getMessage());
         }
         return false;
+    }
+
+    private EnWorkshopStatus parseWorkshopStatus(String statusValue) {
+        if (statusValue == null) {
+            return EnWorkshopStatus.SCHEDULED;
+        }
+
+        try {
+            return EnWorkshopStatus.valueOf(statusValue.trim().toUpperCase());
+        } catch (IllegalArgumentException exception) {
+            System.out.println("Unknown workshop state: " + statusValue + ". Fallback to SCHEDULED.");
+            return EnWorkshopStatus.SCHEDULED;
+        }
     }
 }

@@ -35,7 +35,12 @@ public class SupplierController extends BaseController {
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         tableView.getColumns().setAll(colID, colName);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 2;
+        colID.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colName.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }

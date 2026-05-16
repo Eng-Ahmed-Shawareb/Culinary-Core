@@ -40,7 +40,13 @@ public class KitchenController extends BaseController {
         colType.setCellValueFactory(new PropertyValueFactory<>("type"));
 
         tableView.getColumns().setAll(colID, colName, colType);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 3;
+        colID.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colName.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colType.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }

@@ -55,7 +55,14 @@ public class RegisterController extends BaseController {
         colState.setCellValueFactory(new PropertyValueFactory<>("paymentStatus"));
 
         tableView.getColumns().setAll(colStudent, colWorkshop, colDate, colState);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 4;
+        colStudent.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colWorkshop.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colDate.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colState.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }

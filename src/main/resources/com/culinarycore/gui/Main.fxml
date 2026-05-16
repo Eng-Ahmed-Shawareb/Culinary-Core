@@ -13,14 +13,14 @@
     <left>
         <VBox prefWidth="250.0" spacing="10.0" styleClass="sidebar" BorderPane.alignment="CENTER">
             <children>
-                <HBox styleClass="header-box">
+                <HBox styleClass="header-box" spacing="8.0">
                     <children>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" styleClass="header-icon">
                             <image>
                                 <Image url="@cutlery.png" />
                             </image>
                         </ImageView>
-                        <Label styleClass="header-label" text="CulinaryCore" />
+                        <Label styleClass="header-label" text="Culinary School System" maxWidth="180.0" wrapText="true" HBox.hgrow="ALWAYS" />
                     </children>
                     <VBox.margin>
                         <Insets bottom="20.0" />

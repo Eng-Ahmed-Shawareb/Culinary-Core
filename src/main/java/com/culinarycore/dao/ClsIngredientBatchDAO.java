@@ -38,7 +38,7 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
                         resultSet.getString("name"),
                         resultSet.getDate("expiration date").toLocalDate(),
                         resultSet.getDate("delivery date").toLocalDate(),
-                        EnIngredientBatch.valueOf(resultSet.getString("state").toUpperCase())
+                        parseIngredientState(resultSet.getString("state"))
                 ));
             }
         } catch (SQLException e) {
@@ -62,7 +62,7 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
                         resultSet.getString("name"),
                         resultSet.getDate("expiration date").toLocalDate(),
                         resultSet.getDate("delivery date").toLocalDate(),
-                        EnIngredientBatch.valueOf(resultSet.getString("state").toUpperCase())
+                        parseIngredientState(resultSet.getString("state"))
                 ));
             }
             return ingredientBatches;
@@ -146,7 +146,7 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
                         resultSet.getString("name"),
                         resultSet.getDate("expiration date").toLocalDate(),
                         resultSet.getDate("delivery date").toLocalDate(),
-                        EnIngredientBatch.valueOf(resultSet.getString("state").toUpperCase())
+                        parseIngredientState(resultSet.getString("state"))
                 ));
             }
         } catch (SQLException e) {
@@ -181,5 +181,27 @@ public class ClsIngredientBatchDAO implements IRepository<ClsIngredientBatch> {
             System.out.println("DTO Report Error: " + e.getMessage());
         }
         return report;
+    }
+
+    private EnIngredientBatch parseIngredientState(String stateValue) {
+        if (stateValue == null) {
+            return EnIngredientBatch.EXIST;
+        }
+
+        String normalized = stateValue.trim().toUpperCase();
+
+        if ("CONSUMED".equals(normalized)) {
+            return EnIngredientBatch.CONSUMED;
+        }
+
+        if ("EXIST".equals(normalized) ||
+            "FRESH".equals(normalized) ||
+            "SEALED".equals(normalized) ||
+            "REFRIGERATED".equals(normalized) ||
+            "DRY".equals(normalized)) {
+            return EnIngredientBatch.EXIST;
+        }
+
+        return EnIngredientBatch.EXIST;
     }
 }

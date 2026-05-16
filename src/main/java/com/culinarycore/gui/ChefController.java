@@ -50,7 +50,15 @@ public class ChefController extends BaseController {
         colBio.setCellValueFactory(new PropertyValueFactory<>("bio"));
 
         tableView.getColumns().setAll(colID, colFirstName, colLastName, colExpertise, colBio);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        
+        // Bind column widths to table width
+        int numCols = 5;
+        colID.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colFirstName.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colLastName.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colExpertise.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
+        colBio.prefWidthProperty().bind(tableView.widthProperty().divide(numCols));
 
         loadData();
     }

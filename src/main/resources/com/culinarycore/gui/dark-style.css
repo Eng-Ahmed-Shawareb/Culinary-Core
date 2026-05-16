@@ -33,7 +33,9 @@
 
 /* Headers */
 .header-label {
-    -fx-text-fill: #58a6ff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
 }
 
 .subtitle-label {
@@ -113,22 +115,5 @@
     -fx-border-color: #30363d;
 }
 .form-label {
-    -fx-text-fill: #c9d1d9;
-}
-
-/* Charts */
-.chart-title {
-    -fx-text-fill: #58a6ff;
-}
-.chart-pie-label {
-    -fx-fill: #c9d1d9;
-}
-.axis {
-    -fx-tick-label-fill: #c9d1d9;
-}
-.chart-legend {
-    -fx-background-color: transparent;
-}
-.chart-legend-item {
     -fx-text-fill: #c9d1d9;
 }

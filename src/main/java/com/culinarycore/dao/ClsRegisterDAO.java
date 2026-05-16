@@ -39,7 +39,7 @@ public class ClsRegisterDAO implements IRepository<ClsRegister> {
                 return Optional.of(new ClsRegister(resultSet.getInt("FK_StudentID") ,
                         resultSet.getInt("FK_WorkshopID") ,
                         resultSet.getObject("register date" , LocalDate.class) ,
-                        EnPaymentStatus.valueOf(resultSet.getString("state"))));
+                        parsePaymentStatus(resultSet.getString("state"))));
             }
         } catch (SQLException es) {
             System.out.println("Exception : " + es.getMessage());
@@ -58,7 +58,7 @@ public class ClsRegisterDAO implements IRepository<ClsRegister> {
                ClsRegister registerInstance = new ClsRegister(resultSet.getInt("FK_StudentID") ,
                         resultSet.getInt("FK_WorkshopID") ,
                         resultSet.getObject("register date" , LocalDate.class) ,
-                        EnPaymentStatus.valueOf(resultSet.getString("state")));
+                        parsePaymentStatus(resultSet.getString("state")));
                resultList.add(registerInstance);
             }
         } catch (SQLException es) {
@@ -140,5 +140,18 @@ public class ClsRegisterDAO implements IRepository<ClsRegister> {
             System.out.println("Exception: " + es.getMessage());
         }
         return Optional.empty();
+    }
+
+    private EnPaymentStatus parsePaymentStatus(String statusValue) {
+        if (statusValue == null) {
+            return EnPaymentStatus.PENDING;
+        }
+
+        try {
+            return EnPaymentStatus.valueOf(statusValue.trim().toUpperCase());
+        } catch (IllegalArgumentException exception) {
+            System.out.println("Unknown register state: " + statusValue + ". Fallback to PENDING.");
+            return EnPaymentStatus.PENDING;
+        }
     }
 }
