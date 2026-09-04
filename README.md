@@ -68,14 +68,11 @@ The project follows a layered structure inspired by **MVC** and **DAO** patterns
 
 | Technology               | Purpose                               |
 | ------------------------ | ------------------------------------- |
-| **Java 25+**             | Core application language             |
-| **JavaFX 21**            | Desktop graphical user interface      |
-| **FXML**                 | Declarative UI layout                 |
-| **CSS**                  | Application styling and themes        |
+| **Java**                 | Core application language             |
+| **JavaFX**               | Desktop graphical user interface      |
 | **Microsoft SQL Server** | Persistent data storage               |
 | **JDBC**                 | Database connectivity                 |
 | **Maven**                | Build and dependency management       |
-| **JUnit 5**              | Testing support                       |
 | **PlantUML / Draw.io**   | UML and database design documentation |
 
 ---
@@ -112,8 +109,6 @@ src/main/java/com/culinarycore/dao/singleton/ClsDatabaseConnection.java
 ```
 
 Update the connection configuration with your own SQL Server host, database name, username, and password before running the application.
-
-> ⚠️ **Security Note:** Database credentials should never be committed to source control. For a production-ready setup, move them to environment variables or an external configuration file.
 
 ### 3. Run the Application
 
